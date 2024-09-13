@@ -1,0 +1,379 @@
+/* login.css */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #4B7A8A, #a1c4d5);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    color: #4B7A8A;
+  }
+
+  50% {
+    color: #2a5d5d;
+  }
+}
+
+/* content */
+.content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: scaleIn 0.8s ease-out;
+}
+
+.content p {
+  font-size: 18px;
+  color: #333;
+  padding-bottom: 20px;
+}
+
+.content a.btn {
+  background-color: #4B7A8A;
+  color: white;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.content a.btn:hover {
+  background-color: #357a7b;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.content a.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+form {
+  max-width: 360px;
+  width: 100%;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: scaleIn 0.8s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #4B7A8A;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #4B7A8A;
+  box-shadow: 0 0 15px rgba(75, 122, 138, 0.5);
+  outline: none;
+  animation: glow 0.5s ease-out;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 5px rgba(75, 122, 138, 0.3);
+  }
+
+  to {
+    box-shadow: 0 0 15px rgba(75, 122, 138, 0.5);
+  }
+}
+
+.btn,
+.submit-btn {
+  background-color: #4B7A8A;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover,
+.submit-btn:hover {
+  background-color: #357a7b;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active,
+.submit-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+p {
+  text-align: center;
+  margin-top: 20px;
+}
+
+p a {
+  color: #4B7A8A;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+p a:hover {
+  color: #357a7b;
+  transform: scale(1.05);
+}
+
+/* Role Selection Page */
+.role-selection-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 95vh;
+  /* Adjust as needed */
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+  /* Ensures responsiveness */
+  padding: 20px;
+  box-sizing: border-box;
+  /* Include padding in width calculations */
+  margin: auto;
+  /* Center container */
+  animation: bounceIn 0.8s ease-out;
+}
+
+.role-selection-container h1 {
+  font-size: 2rem;
+  /* Responsive font size */
+  color: #4B7A8A;
+  margin-bottom: 20px;
+  /* Adjust margin for spacing */
+  text-align: center;
+  animation: slideIn 0.8s ease-out;
+}
+
+.role-selection-container form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  /* Full width of the container */
+  box-sizing: border-box;
+  /* Ensure padding is included in width calculation */
+  margin: 0 auto;
+  /* Center the form */
+}
+
+.role-selection-container .role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  animation: popIn 0.6s ease-out;
+}
+
+.role-selection-container .role-card:hover {
+  background-color: #71c9e6;
+  border-color: #4B7A8A;
+}
+
+.role-card.selected {
+  background-color: #2a9ec5;
+  border-color: #010101;
+  border-width: 4px;
+  box-shadow: 0 0 20px rgba(75, 122, 138, 0.4);
+}
+
+.role-card input {
+  display: none;
+}
+
+.role-card label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.role-icon {
+  font-size: 3rem;
+  /* Responsive icon size */
+  margin-bottom: 15px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.role-card:hover .role-icon {
+  transform: scale(1.2);
+  color: #4B7A8A;
+}
+
+.role-card h2 {
+  font-size: 1.5rem;
+  /* Responsive font size */
+  margin: 10px 0;
+  color: #4B7A8A;
+}
+
+.role-card p {
+  color: #555;
+  margin: 0;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  form,
+  .role-selection-container {
+    padding: 20px;
+  }
+
+  .input-group input {
+    padding: 10px;
+  }
+
+  .btn,
+  .submit-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .role-card {
+    padding: 15px;
+  }
+
+  .role-icon {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  form,
+  .role-selection-container {
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .input-group input {
+    padding: 8px;
+  }
+
+  .btn,
+  .submit-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .role-card {
+    padding: 0px;
+  }
+
+  .role-icon {
+    font-size: 26px;
+  }
+}
