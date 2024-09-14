@@ -41,6 +41,20 @@ if ($stmt = $conn->prepare("SELECT course_title, course_description, thumbnail_p
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $newTitle = $_POST['course_title'];
   $newDescription = $_POST['course_description'];
+  $oldCourseDir = 'courses/' . $courseTitle;
+  $newCourseDir = 'courses/' . $newTitle;
+
+  // Check if the title has changed
+  if ($newTitle !== $courseTitle) {
+    // Rename the course directory
+    if (is_dir($oldCourseDir)) {
+      if (rename($oldCourseDir, $newCourseDir)) {
+        $courseTitle = $newTitle; // Update the $courseTitle variable
+      } else {
+        $errorMessage = "Failed to rename the course directory.";
+      }
+    }
+  }
 
   // Update course details in the database
   if ($stmt = $conn->prepare("UPDATE courses SET course_title = ?, course_description = ? WHERE course_id = ? AND created_by = ?")) {
@@ -171,9 +185,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 
-  if (empty($_FILES['new_videos']['name'][0])) {
-    echo "empty";
-  }
+  // if (empty($_FILES['new_videos']['name'][0])) {
+  //   echo "empty";
+  // }
 
   // Handle new video uploads
   if (!empty($_FILES['course_videos']['name'][0])) {
