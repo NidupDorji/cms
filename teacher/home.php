@@ -11,7 +11,6 @@ include "../utility/auth.php";
 // Database connection
 include "../utility/db.php";
 
-
 // Handling course creation and file uploads
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $courseName = mysqli_real_escape_string($conn, $_POST['course_name']);
@@ -70,15 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
   }
-  // Handle video upload
+
+  // Handle video and transcript uploads
   if (!empty($_FILES['course_videos']['name'][0])) {
     foreach ($_FILES['course_videos']['name'] as $key => $videoFileName) {
       $videoFilePath = $courseDir . '/' . basename($videoFileName);
+      $transcript = mysqli_real_escape_string($conn, $_POST['transcript'][$key]); // Handle transcript input
 
       if (move_uploaded_file($_FILES['course_videos']['tmp_name'][$key], $videoFilePath)) {
-        $insertVideoQuery = "INSERT INTO videos (course_id, video_title) VALUES ($courseId, '$videoFileName')";
+        // Insert video and transcript into the videos table
+        $insertVideoQuery = "INSERT INTO videos (course_id, video_title, transcript) VALUES ($courseId, '$videoFileName', '$transcript')";
         mysqli_query($conn, $insertVideoQuery);
-        $videoUploadSuccess = "Videos uploaded successfully.";
+        $videoUploadSuccess = "Videos and transcripts uploaded successfully.";
       } else {
         $videoUploadError = "Failed to upload video: $videoFileName.";
       }
@@ -86,8 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -105,8 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <hr class="stylish-divider"> <!-- Stylish divider -->
 
-
-  <!-- New Course creation form -->
   <!-- Button to toggle the visibility of the course form -->
   <button id="toggle-course-form" class="toggle-button">Create New Course</button>
 
@@ -137,10 +135,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label for="reference_files">Upload Reference Files (PDF/DOCX):</label>
           <input type="file" id="reference_files" name="reference_files[]" accept=".pdf,.docx" multiple required>
         </div>
-        <div>
-          <label for="course_videos">Upload Course Videos:</label>
-          <input type="file" id="course_videos" name="course_videos[]" accept="video/*" multiple required>
+
+        <div id="video-section">
+          <div class="video-transcript-group">
+            <div class="video-upload">
+              <label for="course_videos">Upload Course Video:</label>
+              <input type="file" id="course_videos" name="course_videos[]" accept="video/*" required>
+            </div>
+            <div class="transcript-upload">
+              <label for="transcript">Transcript:</label>
+              <textarea id="transcript" name="transcript[]" required></textarea>
+            </div>
+            <button type="button" class="remove-video">-</button>
+          </div>
         </div>
+
+        <!-- Add more video upload sections -->
+        <button type="button" id="add-video" class="toggle-button">+ Add Another Video</button>
+
         <div>
           <button type="submit">Create Course</button>
         </div>
@@ -154,8 +166,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php include "../utility/bot.php" ?>
   <script src="../js/script.js"></script>
 </body>
+
 <script>
-  //toggle button to display and create new course form ---- for teacher's interface
+  // Toggle button to display and create new course form ---- for teacher's interface
   document.getElementById("toggle-course-form").addEventListener("click", function() {
     const courseForm = document.querySelector(".course-form-home");
     if (courseForm.style.display === "none" || courseForm.style.display === "") {
@@ -164,11 +177,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       courseForm.style.display = "none";
     }
   });
+
+  // Add more video upload fields
+  document.getElementById("add-video").addEventListener("click", function() {
+    const videoSection = document.getElementById("video-section");
+
+    // Create video and transcript container
+    const videoTranscriptGroup = document.createElement("div");
+    videoTranscriptGroup.classList.add("video-transcript-group");
+
+    // Create video input element
+    const videoUploadDiv = document.createElement("div");
+    videoUploadDiv.classList.add("video-upload");
+    const videoLabel = document.createElement("label");
+    videoLabel.innerHTML = "Upload Course Video:";
+    const videoInput = document.createElement("input");
+    videoInput.type = "file";
+    videoInput.name = "course_videos[]";
+    videoInput.accept = "video/*";
+    videoUploadDiv.appendChild(videoLabel);
+    videoUploadDiv.appendChild(videoInput);
+
+    // Create transcript textarea
+    const transcriptUploadDiv = document.createElement("div");
+    transcriptUploadDiv.classList.add("transcript-upload");
+    const transcriptLabel = document.createElement("label");
+    transcriptLabel.innerHTML = "Transcript:";
+    const transcriptInput = document.createElement("textarea");
+    transcriptInput.name = "transcript[]";
+    transcriptUploadDiv.appendChild(transcriptLabel);
+    transcriptUploadDiv.appendChild(transcriptInput);
+
+    // Create remove button
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.classList.add("remove-video");
+    removeButton.innerHTML = "-";
+
+    // Append video, transcript, and remove button to the group
+    videoTranscriptGroup.appendChild(videoUploadDiv);
+    videoTranscriptGroup.appendChild(transcriptUploadDiv);
+    videoTranscriptGroup.appendChild(removeButton);
+
+    // Append group to the video section
+    videoSection.appendChild(videoTranscriptGroup);
+
+    // Remove video and transcript input when clicking the minus button
+    removeButton.addEventListener("click", function() {
+      videoTranscriptGroup.remove();
+    });
+  });
+
+  // Handle initial remove button in case user removes the first group
+  document.querySelectorAll(".remove-video").forEach(function(button) {
+    button.addEventListener("click", function() {
+      button.closest(".video-transcript-group").remove();
+    });
+  });
 </script>
 
 </html>
-
 <?php
-// Close the database connection
-mysqli_close($conn);
+mysqli_close($conn)
 ?>
