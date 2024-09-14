@@ -1,9 +1,11 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
 // Database connection
 include "../utility/db.php";
-
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -56,42 +58,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   } else {
     $errorMessage = "Error preparing statement: " . $conn->error;
   }
-}
 
-// Handle file deletion
-if (isset($_POST['delete_file'])) {
-  $fileToDelete = $_POST['delete_file'];
-  $isVideo = strpos($fileToDelete, '.mp4') !== false; // Adjust this to match video file extensions you support
-  $isMaterial = !$isVideo; // Assuming if it's not a video, it's a material (PDF/DOCX)
+  // Handle file deletion
+  if (isset($_POST['delete_file'])) {
+    $fileToDelete = $_POST['delete_file'];
+    $isVideo = strpos($fileToDelete, '.mp4') !== false;
+    $isMaterial = !$isVideo;
 
-  // Delete file from filesystem
-  if (unlink($fileToDelete)) {
-    $successMessage = "File deleted successfully!";
+    // Delete file from filesystem
+    if (file_exists($fileToDelete) && unlink($fileToDelete)) {
+      $successMessage = "File deleted successfully!";
 
-    // Update the database
-    if ($isVideo) {
-      // Remove video record from the database
-      $videoTitle = basename($fileToDelete);
-      $stmt = $conn->prepare("DELETE FROM videos WHERE course_id = ? AND video_title = ?");
-      $stmt->bind_param("is", $courseId, $videoTitle);
-      $stmt->execute();
-      $stmt->close();
-    } elseif ($isMaterial) {
-      // Remove material record from the database
-      $materialTitle = basename($fileToDelete);
-      $stmt = $conn->prepare("DELETE FROM materials WHERE course_id = ? AND material_title = ?");
-      $stmt->bind_param("is", $courseId, $materialTitle);
-      $stmt->execute();
-      $stmt->close();
+      // Update the database
+      if ($isVideo) {
+        // Remove video record from the database
+        $videoTitle = basename($fileToDelete);
+        $stmt = $conn->prepare("DELETE FROM videos WHERE course_id = ? AND video_title = ?");
+        $stmt->bind_param("is", $courseId, $videoTitle);
+        $stmt->execute();
+        $stmt->close();
+      } elseif ($isMaterial) {
+        // Remove material record from the database
+        $materialTitle = basename($fileToDelete);
+        $stmt = $conn->prepare("DELETE FROM materials WHERE course_id = ? AND material_title = ?");
+        $stmt->bind_param("is", $courseId, $materialTitle);
+        $stmt->execute();
+        $stmt->close();
+      }
+    } else {
+      $errorMessage = "Failed to delete file.";
     }
-  } else {
-    $errorMessage = "Failed to delete file.";
   }
-}
 
-
-// Handle new file uploads (thumbnail, videos, documents)
-if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_FILES['new_documents'])) {
+  // Handle new file uploads (thumbnail, videos, documents)
   $courseDir = 'courses/' . $courseTitle;
   $thumbnailDir = $courseDir . '/thumbnail/';
 
@@ -99,6 +98,7 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
   if (!is_dir($thumbnailDir)) {
     mkdir($thumbnailDir, 0777, true);
   }
+
   // Update thumbnail
   if (!empty($_FILES['new_thumbnail']['name'])) {
     $newThumbnailName = basename($_FILES['new_thumbnail']['name']);
@@ -106,7 +106,7 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
 
     // Check if there's an existing thumbnail and delete it
     if (!empty($thumbnailPath) && file_exists($thumbnailDir . $thumbnailPath)) {
-      unlink($thumbnailDir . $thumbnailPath); // Delete the previous thumbnail
+      unlink($thumbnailDir . $thumbnailPath);
     }
 
     if (move_uploaded_file($_FILES['new_thumbnail']['tmp_name'], $newThumbnailPath)) {
@@ -137,21 +137,67 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
     }
     $successMessage = "New documents uploaded successfully!";
   }
+
+  // Handle existing video edits
+  if (isset($_POST['existing_video_transcripts'])) {
+    foreach ($_POST['existing_video_transcripts'] as $videoId => $transcript) {
+      $stmt = $conn->prepare("UPDATE videos SET transcript = ? WHERE video_id = ? AND course_id = ?");
+      $stmt->bind_param("sii", $transcript, $videoId, $courseId);
+      $stmt->execute();
+      $stmt->close();
+    }
+    $successMessage = "Existing video's transcripts updated successfully!";
+  }
+
+  // Handle file deletion for videos
+  if (isset($_POST['delete_video'])) {
+    $videoId = $_POST['delete_video'];
+    $stmt = $conn->prepare("SELECT video_title FROM videos WHERE video_id = ? AND course_id = ?");
+    $stmt->bind_param("ii", $videoId, $courseId);
+    $stmt->execute();
+    $stmt->bind_result($videoTitle);
+    $stmt->fetch();
+    $stmt->close();
+
+    $videoFilePath = 'courses/' . $courseTitle . '/' . $videoTitle;
+    if (file_exists($videoFilePath) && unlink($videoFilePath)) {
+      $stmt = $conn->prepare("DELETE FROM videos WHERE video_id = ? AND course_id = ?");
+      $stmt->bind_param("ii", $videoId, $courseId);
+      $stmt->execute();
+      $stmt->close();
+      $successMessage = "Video and its transcript deleted successfully!";
+    } else {
+      $errorMessage = "Failed to delete video file.";
+    }
+  }
+
+  if (empty($_FILES['new_videos']['name'][0])) {
+    echo "empty";
+  }
+
   // Handle new video uploads
-  if (!empty($_FILES['new_videos']['name'][0])) {
-    foreach ($_FILES['new_videos']['name'] as $key => $videoFileName) {
+  if (!empty($_FILES['course_videos']['name'][0])) {
+    foreach ($_FILES['course_videos']['name'] as $key => $videoFileName) {
       $videoFilePath = $courseDir . '/' . basename($videoFileName);
-      if (move_uploaded_file($_FILES['new_videos']['tmp_name'][$key], $videoFilePath)) {
-        $stmt = $conn->prepare("INSERT INTO videos (course_id, video_title) VALUES (?, ?)");
-        $stmt->bind_param("is", $courseId, $videoFileName);
-        $stmt->execute();
-        $stmt->close();
+      $transcript = mysqli_real_escape_string($conn, $_POST['transcript'][$key]);
+
+      if (move_uploaded_file($_FILES['course_videos']['tmp_name'][$key], $videoFilePath)) {
+        $insertVideoQuery = "INSERT INTO videos (course_id, video_title, transcript) VALUES ($courseId, '$videoFileName', '$transcript')";
+        if (mysqli_query($conn, $insertVideoQuery)) {
+          $videoUploadSuccess = "Videos and transcripts uploaded successfully.";
+        } else {
+          $videoUploadError = "Database insert error: " . mysqli_error($conn);
+        }
+      } else {
+        $videoUploadError = "Failed to upload video: $videoFileName.";
       }
     }
-    $successMessage = "New videos uploaded successfully!";
+  } else {
+    $videoUploadError = "No files uploaded.";
   }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -161,8 +207,6 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
   <?php include "utility/header.php" ?>
   <!-- welcome msg using welcome.php -->
   <?php include "../utility/welcome.php" ?>
-
-
 
   <div class="container">
     <div class="course-form">
@@ -185,6 +229,7 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
           <label for="course_description">Course Description:</label>
           <textarea id="course_description" name="course_description" required><?php echo htmlspecialchars($courseDescription); ?></textarea>
         </div>
+
 
         <!-- Display existing thumbnail -->
         <div>
@@ -209,37 +254,91 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
           <label for="new_documents">Upload New Documents (PDF/DOCX):</label>
           <input type="file" id="new_documents" name="new_documents[]" accept=".pdf,.docx" multiple>
         </div>
-        <!-- Display existing videos -->
+
+
+        <!-- Display existing videos with transcripts -->
         <div>
-          <label>Current Videos:</label>
+          <label>Existing Videos and Transcripts:</label>
           <?php
-          $videoQuery = $conn->query("SELECT video_title FROM videos WHERE course_id = $courseId");
+          $videoQuery = $conn->query("SELECT video_id, video_title, transcript FROM videos WHERE course_id = $courseId");
           while ($video = $videoQuery->fetch_assoc()) {
-            echo '<p>' . htmlspecialchars($video['video_title']) . ' <button type="submit" name="delete_file" value="courses/' . $courseTitle . '/' . htmlspecialchars($video['video_title']) . '">Delete</button></p>';
+            echo '<p>' . htmlspecialchars($video['video_title']) . ' <button type="submit" name="delete_video" value="' . htmlspecialchars($video['video_id']) . '">Delete</button></p>';
+            echo '<textarea name="existing_video_transcripts[' . $video['video_id'] . ']" rows="3">' . htmlspecialchars($video['transcript']) . '</textarea>';
           }
           ?>
         </div>
-        <div>
-          <label for="new_videos">Upload New Videos:</label>
-          <input type="file" id="new_videos" name="new_videos[]" accept="video/*" multiple>
-        </div>
 
-        <div>
-          <button type="submit">Update Course</button>
+        <!-- add new video and transcript section -->
+        <div id="video-section">
+          <div class="video-transcript-group">
+            <div class="video-upload">
+              <label for="course_videos">Upload Course Video:</label>
+              <input type="file" id="course_videos" name="course_videos[]" accept="video/*">
+            </div>
+            <div class="transcript-upload">
+              <label for="transcript">Transcript:</label>
+              <textarea id="transcript" name="transcript[]"></textarea>
+            </div>
+            <button type="button" class="remove-video">-</button>
+          </div>
         </div>
+        <button type="button" id="add-video" class="toggle-button">+ Add Another Video</button>
+
+        <button type="submit">Save Changes</button>
       </form>
-
-      <a href="home.php">Back to My Courses</a> <!-- Link back to the courses page -->
     </div>
   </div>
-  <!-- footer -->
-  <?php include "../utility/footer.php"; ?>
-  <!-- bot script -->
-  <?php include "../utility/bot.php" ?>
+
+  <?php include "../utility/footer.php" ?>
   <script src="../js/script.js"></script>
+
+  <script>
+    document.getElementById("add-video").addEventListener("click", function() {
+      const videoSection = document.getElementById("video-section");
+      const videoTranscriptGroup = document.createElement("div");
+      videoTranscriptGroup.classList.add("video-transcript-group");
+
+      const videoUploadDiv = document.createElement("div");
+      videoUploadDiv.classList.add("video-upload");
+      const videoLabel = document.createElement("label");
+      videoLabel.innerHTML = "Upload Course Video:";
+      const videoInput = document.createElement("input");
+      videoInput.type = "file";
+      videoInput.name = "course_videos[]";
+      videoInput.accept = "video/*";
+      videoUploadDiv.appendChild(videoLabel);
+      videoUploadDiv.appendChild(videoInput);
+
+      const transcriptUploadDiv = document.createElement("div");
+      transcriptUploadDiv.classList.add("transcript-upload");
+      const transcriptLabel = document.createElement("label");
+      transcriptLabel.innerHTML = "Transcript:";
+      const transcriptInput = document.createElement("textarea");
+      transcriptInput.name = "transcript[]";
+      transcriptUploadDiv.appendChild(transcriptLabel);
+      transcriptUploadDiv.appendChild(transcriptInput);
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.classList.add("remove-video");
+      removeButton.innerHTML = "-";
+      removeButton.addEventListener("click", function() {
+        videoTranscriptGroup.remove();
+      });
+
+      videoTranscriptGroup.appendChild(videoUploadDiv);
+      videoTranscriptGroup.appendChild(transcriptUploadDiv);
+      videoTranscriptGroup.appendChild(removeButton);
+
+      videoSection.appendChild(videoTranscriptGroup);
+    });
+  </script>
+
 </body>
 
 </html>
+
+
 
 <?php
 // Close the database connection
