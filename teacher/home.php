@@ -42,36 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       mkdir($courseDir, 0777, true);
     }
 
-    // Handle video upload
-    if (!empty($_FILES['course_videos']['name'][0])) {
-      foreach ($_FILES['course_videos']['name'] as $key => $videoFileName) {
-        $videoFilePath = $courseDir . '/' . basename($videoFileName);
-
-        if (move_uploaded_file($_FILES['course_videos']['tmp_name'][$key], $videoFilePath)) {
-          $insertVideoQuery = "INSERT INTO videos (course_id, video_title) VALUES ($courseId, '$videoFileName')";
-          mysqli_query($conn, $insertVideoQuery);
-          $videoUploadSuccess = "Videos uploaded successfully.";
-        } else {
-          $videoUploadError = "Failed to upload video: $videoFileName.";
-        }
-      }
-    }
-
-    // Handle PDF/DOCX uploads
-    if (!empty($_FILES['reference_files']['name'])) {
-      foreach ($_FILES['reference_files']['name'] as $key => $fileName) {
-        $filePath = $courseDir . '/' . basename($fileName);
-
-        if (move_uploaded_file($_FILES['reference_files']['tmp_name'][$key], $filePath)) {
-          // Insert reference material into the materials table
-          $insertMaterialQuery = "INSERT INTO materials (course_id, material_title) VALUES ($courseId, '$fileName')";
-          mysqli_query($conn, $insertMaterialQuery);
-        } else {
-          $fileUploadError = "Failed to upload $fileName.";
-        }
-      }
-    }
-
     // Handle thumbnail upload
     if (!empty($_FILES['thumbnail']['name'])) {
       if (move_uploaded_file($_FILES['thumbnail']['tmp_name'], $thumbnailFilePath)) {
@@ -84,6 +54,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $courseCreationSuccess = "Course created successfully.";
   } else {
     $courseCreationError = "Error: " . $insertCourseQuery . "<br>" . mysqli_error($conn);
+  }
+
+  // Handle PDF/DOCX uploads
+  if (!empty($_FILES['reference_files']['name'])) {
+    foreach ($_FILES['reference_files']['name'] as $key => $fileName) {
+      $filePath = $courseDir . '/' . basename($fileName);
+
+      if (move_uploaded_file($_FILES['reference_files']['tmp_name'][$key], $filePath)) {
+        // Insert reference material into the materials table
+        $insertMaterialQuery = "INSERT INTO materials (course_id, material_title) VALUES ($courseId, '$fileName')";
+        mysqli_query($conn, $insertMaterialQuery);
+      } else {
+        $fileUploadError = "Failed to upload $fileName.";
+      }
+    }
+  }
+  // Handle video upload
+  if (!empty($_FILES['course_videos']['name'][0])) {
+    foreach ($_FILES['course_videos']['name'] as $key => $videoFileName) {
+      $videoFilePath = $courseDir . '/' . basename($videoFileName);
+
+      if (move_uploaded_file($_FILES['course_videos']['tmp_name'][$key], $videoFilePath)) {
+        $insertVideoQuery = "INSERT INTO videos (course_id, video_title) VALUES ($courseId, '$videoFileName')";
+        mysqli_query($conn, $insertVideoQuery);
+        $videoUploadSuccess = "Videos uploaded successfully.";
+      } else {
+        $videoUploadError = "Failed to upload video: $videoFileName.";
+      }
+    }
   }
 }
 ?>
@@ -133,13 +132,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label for="thumbnail">Upload Course Thumbnail:</label>
           <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
         </div>
-        <div>
-          <label for="course_videos">Upload Course Videos:</label>
-          <input type="file" id="course_videos" name="course_videos[]" accept="video/*" multiple required>
-        </div>
+
         <div>
           <label for="reference_files">Upload Reference Files (PDF/DOCX):</label>
           <input type="file" id="reference_files" name="reference_files[]" accept=".pdf,.docx" multiple required>
+        </div>
+        <div>
+          <label for="course_videos">Upload Course Videos:</label>
+          <input type="file" id="course_videos" name="course_videos[]" accept="video/*" multiple required>
         </div>
         <div>
           <button type="submit">Create Course</button>

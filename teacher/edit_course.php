@@ -124,22 +124,6 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
     }
   }
 
-
-
-  // Handle new video uploads
-  if (!empty($_FILES['new_videos']['name'][0])) {
-    foreach ($_FILES['new_videos']['name'] as $key => $videoFileName) {
-      $videoFilePath = $courseDir . '/' . basename($videoFileName);
-      if (move_uploaded_file($_FILES['new_videos']['tmp_name'][$key], $videoFilePath)) {
-        $stmt = $conn->prepare("INSERT INTO videos (course_id, video_title) VALUES (?, ?)");
-        $stmt->bind_param("is", $courseId, $videoFileName);
-        $stmt->execute();
-        $stmt->close();
-      }
-    }
-    $successMessage = "New videos uploaded successfully!";
-  }
-
   // Handle new PDF/DOCX uploads
   if (!empty($_FILES['new_documents']['name'][0])) {
     foreach ($_FILES['new_documents']['name'] as $key => $docFileName) {
@@ -152,6 +136,19 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
       }
     }
     $successMessage = "New documents uploaded successfully!";
+  }
+  // Handle new video uploads
+  if (!empty($_FILES['new_videos']['name'][0])) {
+    foreach ($_FILES['new_videos']['name'] as $key => $videoFileName) {
+      $videoFilePath = $courseDir . '/' . basename($videoFileName);
+      if (move_uploaded_file($_FILES['new_videos']['tmp_name'][$key], $videoFilePath)) {
+        $stmt = $conn->prepare("INSERT INTO videos (course_id, video_title) VALUES (?, ?)");
+        $stmt->bind_param("is", $courseId, $videoFileName);
+        $stmt->execute();
+        $stmt->close();
+      }
+    }
+    $successMessage = "New videos uploaded successfully!";
   }
 }
 ?>
@@ -198,22 +195,6 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
           <label for="new_thumbnail">Upload New Thumbnail:</label>
           <input type="file" id="new_thumbnail" name="new_thumbnail" accept="image/*">
         </div>
-
-        <!-- Display existing videos -->
-        <div>
-          <label>Current Videos:</label>
-          <?php
-          $videoQuery = $conn->query("SELECT video_title FROM videos WHERE course_id = $courseId");
-          while ($video = $videoQuery->fetch_assoc()) {
-            echo '<p>' . htmlspecialchars($video['video_title']) . ' <button type="submit" name="delete_file" value="courses/' . $courseTitle . '/' . htmlspecialchars($video['video_title']) . '">Delete</button></p>';
-          }
-          ?>
-        </div>
-        <div>
-          <label for="new_videos">Upload New Videos:</label>
-          <input type="file" id="new_videos" name="new_videos[]" accept="video/*" multiple>
-        </div>
-
         <!-- Display existing documents -->
         <div>
           <label>Current Documents (PDF/DOCX):</label>
@@ -227,6 +208,20 @@ if (isset($_FILES['new_thumbnail']) || isset($_FILES['new_videos']) || isset($_F
         <div>
           <label for="new_documents">Upload New Documents (PDF/DOCX):</label>
           <input type="file" id="new_documents" name="new_documents[]" accept=".pdf,.docx" multiple>
+        </div>
+        <!-- Display existing videos -->
+        <div>
+          <label>Current Videos:</label>
+          <?php
+          $videoQuery = $conn->query("SELECT video_title FROM videos WHERE course_id = $courseId");
+          while ($video = $videoQuery->fetch_assoc()) {
+            echo '<p>' . htmlspecialchars($video['video_title']) . ' <button type="submit" name="delete_file" value="courses/' . $courseTitle . '/' . htmlspecialchars($video['video_title']) . '">Delete</button></p>';
+          }
+          ?>
+        </div>
+        <div>
+          <label for="new_videos">Upload New Videos:</label>
+          <input type="file" id="new_videos" name="new_videos[]" accept="video/*" multiple>
         </div>
 
         <div>
