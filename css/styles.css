@@ -400,8 +400,6 @@ body.dark-mode .left-panel ul li a:hover {
 /* display-section */
 .display-section {
   background-color: #fff;
-  padding: 20px;
-  border-top: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
   /* Ensure space between video player and reference section */

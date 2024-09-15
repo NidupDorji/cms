@@ -202,10 +202,11 @@ include "../utility/auth.php";
     }
 
     .display-section {
-        padding: 20px;
+        padding: 30px;
         border: 1px solid gray;
-        height: 20%;
+        height: 45%;
         overflow-y: auto;
+        line-height: 2;
     }
 
     body.dark-mode .display-section {
