@@ -12,7 +12,7 @@ $courseId = intval($_GET['course_id']);
 $userID = intval($_GET['user_id']);
 $courseTitle = mysqli_real_escape_string($conn, $_GET['course_title']);
 
-// Prepare the query based on the content type
+// Prepare the query based on the content type 
 switch ($contentType) {
   case 'materials':
     $pdfQuery = "SELECT material_title FROM materials WHERE course_id = $courseId AND material_title LIKE '%.pdf'";
@@ -40,17 +40,17 @@ switch ($contentType) {
     $videoIDQuery = "SELECT video_id from videos where video_title='$video_title' and course_id=$courseId";
     $videoIDResult = $conn->query($videoIDQuery);
     if ($videoIDResult->num_rows > 0) {
-      // Fetch the video_id from the result set
+      // Fetch the video_id from the result set 
       $row = $videoIDResult->fetch_assoc();
-      $videoID = $row['video_id']; // Access the video_id column
+      $videoID = $row['video_id']; // Access the video_id column 
 
       echo "inside NOTE DISPLAY--> videoID: $videoID\n";
 
-      // Fetch existing notes for the course and user
+      // Fetch existing notes for the course and user 
       $notesQuery = "SELECT note_id, note FROM notes WHERE user_id = $userID AND course_id = $courseId AND video_id = $videoID";
       $notesResult = $conn->query($notesQuery);
 
-      // Create an interface to display notes and add new ones
+      // Create an interface to display notes and add new ones 
       $response = '<h4>Your Notes</h4>';
       if ($notesResult->num_rows > 0) {
         while ($note = $notesResult->fetch_assoc()) {
@@ -67,7 +67,7 @@ switch ($contentType) {
         $response .= "<p>No notes added.</p>";
       }
 
-      // Add a section to add new notes
+      // Add a section to add new notes 
       $response .= "<h4>Add a New Note</h4>
                     <textarea id='new-note-text' class='new-note-text'></textarea>
                     <button class='add-new-note'>Add Note</button>";
@@ -87,23 +87,23 @@ switch ($contentType) {
     if (empty($video_title)) {
       echo "Please select a video to view its note.";
     } else {
-      // echo "inside NOTES--> video_title:$video_title \n";
-      // echo "inside NOTES--> course_id:$courseId \n";
+      // echo "inside NOTES--> video_title:$video_title \n"; 
+      // echo "inside NOTES--> course_id:$courseId \n"; 
     }
     $videoIDQuery = "SELECT video_id from videos where video_title='$video_title' and course_id=$courseId";
     $videoIDResult = $conn->query($videoIDQuery);
     if ($videoIDResult->num_rows > 0) {
-      // Fetch the video_id from the result set
+      // Fetch the video_id from the result set 
       $row = $videoIDResult->fetch_assoc();
-      $videoID = $row['video_id']; // Access the video_id column
+      $videoID = $row['video_id']; // Access the video_id column 
 
-      // echo "inside NOTES-->  videoID: $videoID\n";
+      // echo "inside NOTES-->  videoID: $videoID\n"; 
 
-      // Fetch existing notes for the course and user
+      // Fetch existing notes for the course and user 
       $notesQuery = "SELECT note_id, note FROM notes WHERE user_id = $userID AND course_id = $courseId AND video_id = $videoID";
       $notesResult = $conn->query($notesQuery);
 
-      // Create an interface to display notes and add new ones
+      // Create an interface to display notes and add new ones 
       $response = '<h4>Your Notes</h4>';
       if ($notesResult->num_rows > 0) {
         while ($note = $notesResult->fetch_assoc()) {
@@ -120,7 +120,7 @@ switch ($contentType) {
         $response .= "<p>No notes added.</p>";
       }
 
-      // Add a section to add new notes
+      // Add a section to add new notes 
       $response .= "<h4>Add a New Note</h4>
                     <textarea id='new-note-text' class='new-note-text'></textarea>
                     <button class='add-new-note'>Add Note</button>";
@@ -133,9 +133,11 @@ switch ($contentType) {
     break;
 
   case 'discuss':
-    // Since you don't have data yet, return a message
-    echo "<p>No discussion data available for this course.</p>";
+    // Display message and link to Forums page with Font Awesome icon
+    echo "<p>You can visit the Forums page to see all the different topics and discussions that are available. From there, you can post a question, start a new discussion, or join an existing conversation.</p>";
+    echo "<p><a href='forums.php'>Discuss <i class='fas fa-comments'></i></a></p>";
     break;
+
   default:
     echo "Invalid content type";
     break;

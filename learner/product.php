@@ -553,7 +553,7 @@ include "../utility/auth.php";
         max-height: 100%;
         overflow-y: auto;
         line-height: 1.8;
-        font-size: 14px;
+        font-size: 18px;
         color: #333;
     }
 
@@ -669,5 +669,28 @@ include "../utility/auth.php";
 
     .dark-mode button:hover {
         opacity: 0.85;
+    }
+
+    /* discuss style */
+    /* Light Mode */
+    body.light-mode a {
+        color: black;
+        /* Light mode link color */
+    }
+
+    body.light-mode a i {
+        color: black;
+        /* Light mode icon color */
+    }
+
+    /* Dark Mode */
+    body.dark-mode a {
+        color: white;
+        /* Dark mode link color */
+    }
+
+    body.dark-mode a i {
+        color: white;
+        /* Dark mode icon color */
     }
 </style>
