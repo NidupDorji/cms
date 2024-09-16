@@ -87,8 +87,8 @@ switch ($contentType) {
     if (empty($video_title)) {
       echo "Please select a video to view its note.";
     } else {
-      echo "inside NOTES--> video_title:$video_title \n";
-      echo "inside NOTES--> course_id:$courseId \n";
+      // echo "inside NOTES--> video_title:$video_title \n";
+      // echo "inside NOTES--> course_id:$courseId \n";
     }
     $videoIDQuery = "SELECT video_id from videos where video_title='$video_title' and course_id=$courseId";
     $videoIDResult = $conn->query($videoIDQuery);
@@ -97,7 +97,7 @@ switch ($contentType) {
       $row = $videoIDResult->fetch_assoc();
       $videoID = $row['video_id']; // Access the video_id column
 
-      echo "inside NOTES-->  videoID: $videoID\n";
+      // echo "inside NOTES-->  videoID: $videoID\n";
 
       // Fetch existing notes for the course and user
       $notesQuery = "SELECT note_id, note FROM notes WHERE user_id = $userID AND course_id = $courseId AND video_id = $videoID";

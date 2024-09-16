@@ -14,9 +14,9 @@ if (isset($_GET['video_title']) && isset($_GET['course_id'])) {
   $result = $stmt->get_result();
 
   if ($row = $result->fetch_assoc()) {
-    echo htmlspecialchars($row['transcript']); // Output the transcript safely
+    echo "<div class='transcript-content'>" . htmlspecialchars($row['transcript']) . "</div>"; // Output transcript inside div
   } else {
-    echo "Transcript not found for this video.";
+    echo "<div class='transcript-content'>Transcript not found for this video.</div>";
   }
 
   $stmt->close();

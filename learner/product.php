@@ -541,4 +541,133 @@ include "../utility/auth.php";
     #user-info {
         display: none;
     }
+
+    /* transcript content style with display-content */
+    .transcript-content {
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-top: 15px;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        max-height: 100%;
+        overflow-y: auto;
+        line-height: 1.8;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .transcript-content p {
+        margin-bottom: 10px;
+    }
+
+    /* Optional for dark mode support */
+    .dark-mode .transcript-content {
+        background-color: #444;
+        border: 1px solid #555;
+        color: #ddd;
+    }
+
+
+    /* notes style within display-content */
+    .note-item {
+        background-color: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .note-text {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+
+    button.save-note,
+    button.delete-note {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    button.delete-note {
+        background-color: #dc3545;
+    }
+
+    button.save-note:hover,
+    button.delete-note:hover {
+        opacity: 0.9;
+    }
+
+    #new-note-text {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+        margin-top: 15px;
+    }
+
+    button.add-new-note {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button.add-new-note:hover {
+        opacity: 0.9;
+    }
+
+    /* Dark Mode */
+    .dark-mode .display-section {
+        background-color: #333;
+        border: 1px solid #444;
+        color: #ddd;
+    }
+
+    .dark-mode .note-item {
+        background-color: #444;
+        border: 1px solid #555;
+    }
+
+    .dark-mode .note-text,
+    .dark-mode #new-note-text {
+        background-color: #555;
+        color: #ddd;
+        border: 1px solid #666;
+    }
+
+    .dark-mode button.save-note,
+    .dark-mode button.delete-note,
+    .dark-mode button.add-new-note {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    .dark-mode button.delete-note {
+        background-color: #c82333;
+    }
+
+    .dark-mode button.add-new-note {
+        background-color: #218838;
+    }
+
+    .dark-mode button:hover {
+        opacity: 0.85;
+    }
 </style>
