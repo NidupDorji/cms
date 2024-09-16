@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+echo "user_id:" . $_SESSION['user_id'];
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -87,7 +88,8 @@ include "../utility/auth.php";
     // $conn->close();
     ?>
 
-
+    <!-- Hidden div to hold user_id -->
+    <div id="user-info" data-user-id="<?php echo $_SESSION['user_id']; ?>"></div>
 
     <div class="course_material_container">
         <div class="left-panel">
@@ -141,6 +143,8 @@ include "../utility/auth.php";
                 <button class="nav-button" data-content="MATERIALS">
                     <span>Materials</span>
                 </button>
+
+
                 <button class="nav-button" data-content="NOTES">
                     <span>Notes</span>
                 </button>
@@ -150,9 +154,7 @@ include "../utility/auth.php";
             </div>
 
             <!-- Reference section -->
-            <div class="display-section">
-
-            </div>
+            <div class="display-section"></div>
             <div class="feedback">
                 <!-- like/unlike toggle button -->
                 <span id="like-icon" class="like-icon
@@ -173,84 +175,183 @@ include "../utility/auth.php";
     </div>
 
     <!-- --------------------------------------------------------------------------------------- -->
+    <script>
+        // Retrieve the user ID from the hidden div's data attribute
+        var USER_ID = $('#user-info').data('user-id');
+        $(document).ready(function() {
+            // Add a new note
+            $(document).on('click', '.add-new-note', function() {
+                var newNoteText = $('#new-note-text').val(); // Use ID to retrieve value
+                console.log("NEW NOTE TEXT:", newNoteText);
+                if (newNoteText.trim() === '') {
+                    alert('Note cannot be empty');
+                    return;
+                }
+
+                $.ajax({
+                    url: 'utility/manageNotes.php',
+                    type: 'POST',
+                    data: {
+                        action: 'add',
+                        course_id: <?php echo $courseId; ?>, // Ensure courseId is defined correctly
+                        note_text: newNoteText,
+                        user_id: USER_ID,
+                        video_title: lastSelectedVideoTitle
+                    },
+                    success: function(response) {
+                        // alert('Note added successfully');
+
+                        // Get course_id and course_title from URL
+                        var urlParams = new URLSearchParams(window.location.search);
+                        var course_id = urlParams.get('course_id');
+                        var course_title = "<?php echo addslashes($courseTitle); ?>"; // Output the course title in a safe way
+                        // Get content tabs buttons
+                        const buttons = document.querySelectorAll('.nav-button');
+                        const displaySection = document.querySelector('.display-section');
+                        $.ajax({
+                            url: 'utility/getContent.php',
+                            type: 'GET',
+                            data: {
+                                content_type: 'notes-display-only',
+                                course_id: <?php echo $courseId; ?>,
+                                course_title: course_title,
+                                user_id: USER_ID,
+                                video_title: lastSelectedVideoTitle
+                            },
+                            success: function(response) {
+                                // Update the display section with the fetched content
+                                displaySection.innerHTML = response;
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error loading content:', error);
+                                displaySection.innerHTML = 'Error loading content';
+                            }
+                        });
+
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', xhr.responseText); // Improved error logging
+                    }
+                });
+            });
+
+            // Edit and save existing notes
+            $(document).on('click', '.save-note', function() {
+                var noteItem = $(this).closest('.note-item');
+                var noteId = noteItem.data('note-id');
+                var noteText = noteItem.find('.note-text').val();
+                console.log("NOTE ITEM:", noteItem);
+                console.log("NOTE ID:", noteId);
+                console.log("EDITED NOTE TEXT:", noteText);
+
+                $.ajax({
+                    url: 'utility/manageNotes.php',
+                    type: 'POST',
+                    data: {
+                        action: 'edit',
+                        note_id: noteId,
+                        note_text: noteText,
+                        user_id: USER_ID,
+                        course_id: <?php echo $courseId; ?>, // Ensure course_id is defined correctly
+                        video_title: lastSelectedVideoTitle
+                    },
+                    success: function(response) {
+                        alert('Note updated successfully -product.php');
+
+                        // Get course_id and course_title from URL
+                        var urlParams = new URLSearchParams(window.location.search);
+                        var course_id = urlParams.get('course_id');
+                        var course_title = "<?php echo addslashes($courseTitle); ?>"; // Output the course title in a safe way
+                        // Get content tabs buttons
+                        const buttons = document.querySelectorAll('.nav-button');
+                        const displaySection = document.querySelector('.display-section');
+                        $.ajax({
+                            url: 'utility/getContent.php',
+                            type: 'GET',
+                            data: {
+                                content_type: 'notes-display-only',
+                                course_id: <?php echo $courseId; ?>,
+                                course_title: course_title,
+                                user_id: USER_ID,
+                                video_title: lastSelectedVideoTitle
+                            },
+                            success: function(response) {
+                                // Update the display section with the fetched content
+                                displaySection.innerHTML = response;
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error loading content:', error);
+                                displaySection.innerHTML = 'Error loading content';
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+
+            // Delete a note
+            $(document).on('click', '.delete-note', function() {
+                var noteItem = $(this).closest('.note-item');
+                var noteId = noteItem.data('note-id');
+                console.log("DELETE NOTE:");
+                console.log("NOTE ITEM:", noteItem);
+                console.log("NOTE ID:", noteId);
+                console.log("USER_ID:", USER_ID);
+                $.ajax({
+                    url: 'utility/manageNotes.php',
+                    type: 'POST',
+                    data: {
+                        action: 'delete',
+                        note_id: noteId,
+                        course_id: <?php echo $courseId; ?>,
+                        user_id: USER_ID,
+                        video_title: lastSelectedVideoTitle,
+
+                    },
+                    success: function(response) {
+                        alert('Note deleted successfully -product.php');
+                        // noteItem.remove();
+                        // Get course_id and course_title from URL
+                        var urlParams = new URLSearchParams(window.location.search);
+                        var course_id = urlParams.get('course_id');
+                        var course_title = "<?php echo addslashes($courseTitle); ?>"; // Output the course title in a safe way
+                        // Get content tabs buttons
+                        const buttons = document.querySelectorAll('.nav-button');
+                        const displaySection = document.querySelector('.display-section');
+                        $.ajax({
+                            url: 'utility/getContent.php',
+                            type: 'GET',
+                            data: {
+                                content_type: 'notes-display-only',
+                                course_id: <?php echo $courseId; ?>,
+                                course_title: course_title,
+                                user_id: USER_ID,
+                                video_title: lastSelectedVideoTitle
+                            },
+                            success: function(response) {
+                                // Update the display section with the fetched content
+                                displaySection.innerHTML = response;
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error loading content:', error);
+                                displaySection.innerHTML = 'Error loading content';
+                            }
+                        });
+                    },
+
+                    error: function(xhr, status, error) {
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+
+        });
+    </script>
 
 </body>
-
-
-<style>
-    .feedback {
-        display: flex;
-        justify-content: flex-start;
-        border: solid 1px;
-        padding: 2px;
-        margin-top: 2px;
-        align-items: center;
-        gap: 25px;
-
-    }
-
-    .feedback i {
-        font-size: 24px;
-    }
-
-    .feedback i:hover {
-        color: #d3d3d3;
-    }
-
-    .feedback span {
-        cursor: pointer;
-    }
-
-    .display-section {
-        padding: 30px;
-        border: 1px solid gray;
-        height: 45%;
-        overflow-y: auto;
-        line-height: 2;
-    }
-
-    body.dark-mode .display-section {
-        border: 1px solid white;
-    }
-
-    .nav-button {
-        position: relative;
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        margin-right: 10px;
-        overflow: hidden;
-    }
-
-    .nav-button span {
-        position: relative;
-        z-index: 1;
-    }
-
-    .nav-button::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        height: 2px;
-        background-color: #ff4500;
-        transform: scaleX(0);
-        transform-origin: center;
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .nav-button:hover::after,
-    .nav-button:focus::after {
-        transform: scaleX(1);
-        background-color: #5F9EA0;
-    }
-
-    body.dark-mode .nav-button span {
-        color: white;
-    }
-</style>
 
 <!-- AJAX for loading materials data (pdfs and docx) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -260,6 +361,9 @@ include "../utility/auth.php";
         var urlParams = new URLSearchParams(window.location.search);
         var course_id = urlParams.get('course_id');
         var course_title = "<?php echo addslashes($courseTitle); ?>"; // Output the course title in a safe way
+
+        // Retrieve the user ID from the hidden div's data attribute
+        var USER_ID = $('#user-info').data('user-id');
 
         // Get content tabs buttons
         const buttons = document.querySelectorAll('.nav-button');
@@ -283,7 +387,9 @@ include "../utility/auth.php";
                     data: {
                         content_type: contentType,
                         course_id: course_id,
-                        course_title: course_title
+                        course_title: course_title,
+                        user_id: USER_ID,
+                        video_title: lastSelectedVideoTitle
                     },
                     success: function(response) {
                         // Update the display section with the fetched content
@@ -320,6 +426,19 @@ include "../utility/auth.php";
             error: function(xhr, status, error) {
                 console.error('Error loading transcript:', error);
                 document.querySelector('.display-section').innerHTML = 'Error loading transcript';
+            }
+        });
+    }
+
+    // Function to manage note based on video title
+    function manageNotes(videoTitle) {
+        $.ajax({
+            url: 'utility/manageNotes.php',
+            type: 'POST',
+            data: {
+                user_id: $_SESSION['user_id'],
+                course_id: <?php echo $courseId; ?>,
+
             }
         });
     }
@@ -404,6 +523,7 @@ include "../utility/auth.php";
         }
     }
 </script>
+<!-- HANDLE NOTE ACTIONS -->
 
 <!-- Footer -->
 <?php include "../utility/footer.php"; ?>
@@ -416,3 +536,9 @@ include "../utility/auth.php";
 </html>
 
 <?php $conn->close(); ?>
+
+<style>
+    #user-info {
+        display: none;
+    }
+</style>
