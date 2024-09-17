@@ -133,9 +133,15 @@ switch ($contentType) {
     break;
 
   case 'discuss':
+    // Extract course_id from the current URL
+    $current_url = $_SERVER['REQUEST_URI'];
+    parse_str(parse_url($current_url, PHP_URL_QUERY), $query_params);
+    $course_id = isset($query_params['course_id']) ? $query_params['course_id'] : '';
+
     // Display message and link to Forums page with Font Awesome icon
     echo "<p>You can visit the Forums page to see all the different topics and discussions that are available. From there, you can post a question, start a new discussion, or join an existing conversation.</p>";
-    echo "<p><a href='forums.php'>Discuss <i class='fas fa-comments'></i></a></p>";
+    echo "<p><a href='forums.php?course_id={$course_id}'>Discuss <i class='fas fa-comments'></i></a></p>";
+
     break;
 
   default:
