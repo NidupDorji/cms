@@ -317,6 +317,7 @@ footer a {
   margin-bottom: 20px;
   background-color: #f9f9f9;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  border-radius:10px;
   height: 100%;
   overflow-y: auto;
 }
@@ -358,6 +359,7 @@ body.dark-mode .left-panel ul li a:hover {
   flex: 1;
   padding: 20px;
   background-color: #fff;
+  border-radius:10px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 }
@@ -370,6 +372,7 @@ body.dark-mode .left-panel ul li a:hover {
   position: relative;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
   height: 0;
+  border-radius: 10px;
 }
 
 .video-player video {
@@ -377,7 +380,9 @@ body.dark-mode .left-panel ul li a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;}
+  height: 100%;
+  border-radius: 10px;
+}
 
 
 .right-panel ul li a {
@@ -387,13 +392,13 @@ body.dark-mode .left-panel ul li a:hover {
   padding: 15px;
   border-radius: 6px;
   background-color: #e9ecef;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
   transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
 }
 
 .right-panel ul li a:hover {
   background-color: #dee2e6;
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
   transform: scale(1.02);
 }
 
@@ -406,7 +411,8 @@ body.dark-mode .left-panel ul li a:hover {
   margin-top: 2px;
   align-items: center;
   gap: 25px;
-
+  padding: 5px;
+  border-radius: 10px;
 }
 
 .feedback i {
@@ -472,6 +478,7 @@ body.dark-mode .nav-button span {
   height: 45%;
   overflow-y: auto;
   line-height: 2;
+  border-radius: 10px;
 }
 
 .display-section h3 {
@@ -579,7 +586,7 @@ body.dark-mode .display-section ul li a:hover {
   }
 
   .course {
-    position: relative;
+    /* position: relative; */
     background-color: #fff;
     border-radius: 12px;
     overflow: hidden;
@@ -851,9 +858,8 @@ body.dark-mode .display-section ul li a:hover {
       text-align: center;
       margin: 20px 0;
       position: relative;
-      /* Needed for pseudo-element positioning */
     }
-  
+
     .header-container::before {
       content: '';
       position: absolute;
@@ -864,17 +870,15 @@ body.dark-mode .display-section ul li a:hover {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 25%, rgba(255, 255, 255, 0) 75%);
       opacity: 0.5;
       pointer-events: none;
-      /* Allows interaction with underlying elements */
       z-index: 1;
     }
   
     .header-title {
       position: relative;
-      /* Needed to ensure it stays above the shiny effect */
       display: inline-block;
       font-size: 2em;
       font-weight: bold;
-      color: gold;
+      color: black;
       margin: 0;
       padding: 10px 20px;
       border: 2px solid gold;
@@ -882,7 +886,6 @@ body.dark-mode .display-section ul li a:hover {
       background: gold;
       animation: fadeIn 1s ease-in-out;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      /* Add shadow for depth */
     }
   
     @keyframes fadeIn {
@@ -907,7 +910,7 @@ body.dark-mode .display-section ul li a:hover {
     }
   
     .top-courses {
-      position: relative;
+      /* position: relative; */
       background-color: #fff;
       border-radius: 12px;
       overflow: hidden;
@@ -1063,13 +1066,13 @@ body.dark-mode .display-section ul li a:hover {
           padding: 10px;
           /* Added padding for better appearance */
           transition: color 0.3s ease;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
           transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
         }
     
         #description-label {
           font-weight: bold;
-          text-decoration: underline;
+          text-decoration:solid;
           padding: 4px 8px;
           /* Light background for contrast */
     
@@ -1083,9 +1086,8 @@ body.dark-mode .display-section ul li a:hover {
           transform: scale(1.02);
         }
     
-        #full-description {
+        .full-description{
           display: none;
-          /* Initially hidden */
         }
     
         body.dark-mode #course-description {
@@ -1100,10 +1102,7 @@ body.dark-mode .display-section ul li a:hover {
           transform: scale(1.02);
         }
     
-        #course-description.expanded #full-description {
-          display: inline;
-          /* Show the full description when expanded */
-        }
+        
     
         .like-icon {
           color: grey;

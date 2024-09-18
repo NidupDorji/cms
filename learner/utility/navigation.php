@@ -1,88 +1,114 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
 <div class="container">
   <div class="header-container">
-    <?php if (!isset($_GET['query']) || empty(trim($_GET['query']))): ?>
-      <h2 class="header-title">Available Courses</h2>
-    <?php endif; ?>
+    <h2 class="header-title">Available Courses</h2>
   </div>
-  <div class="courses">
-    <?php
-    // Database connection
-    $conn = mysqli_connect('localhost', 'root', '', 'cms');
-    if (!$conn) {
-      die("Connection failed: " . mysqli_connect_error());
-    }
-
-    // Define the number of courses per page
-    $coursesPerPage = 6;
-
-    // Get search query from the URL
-    $searchQuery = isset($_GET['query']) ? trim(mysqli_real_escape_string($conn, $_GET['query'])) : '';
-
-    // Count the total number of courses with or without search query
-    $totalCoursesQuery = "SELECT COUNT(*) as total FROM courses WHERE course_title LIKE '%$searchQuery%' OR course_description LIKE '%$searchQuery%'";
-    $totalResult = mysqli_query($conn, $totalCoursesQuery);
-    $totalRow = mysqli_fetch_assoc($totalResult);
-    $totalCourses = $totalRow['total'];
-
-    // Calculate the number of pages required
-    $totalPages = ceil($totalCourses / $coursesPerPage);
-
-    // Get the current page number from the URL, default to page 1 if not set
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $start = ($page - 1) * $coursesPerPage;
-
-    // Fetch courses for the current page with search query
-    $query = "SELECT course_id, course_title, course_description,thumbnail_path FROM courses 
-              WHERE course_title LIKE '%$searchQuery%' OR course_description LIKE '%$searchQuery%' 
-              LIMIT $start, $coursesPerPage";
-    $result = mysqli_query($conn, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-      while ($course = mysqli_fetch_assoc($result)) {
-        $courseId = $course['course_id'];
-        $courseTitle = htmlspecialchars($course['course_title']);
-        $courseDescription = htmlspecialchars($course['course_description']);
-        $thumbnailPath = '../teacher/courses/' . $courseTitle . '/thumbnail/' . $course['thumbnail_path'];
-        echo "
-        <div class='course'>
-          <a href='product.php?course_id=$courseId'>
-            <img src='$thumbnailPath' alt='$courseTitle'>
-            <div class='course-info'>
-              <h3>$courseTitle</h3>
-              <p>$courseDescription</p>
-            </div>
-          </a>
-        </div> ";
-      }
-    } else {
-      echo "<p>No courses found matching your search criteria.</p>";
-    }
-    ?>
+  <div class="courses" id="course-container">
+    <!-- Courses will be loaded here via AJAX -->
   </div>
 </div>
 
 <!-- Pagination Navigation -->
-<div class="pagination">
-  <?php if ($page > 1): ?>
-    <a href="?query=<?php echo urlencode($searchQuery); ?>&page=<?php echo $page - 1; ?>" class="prev">Previous</a>
-  <?php endif; ?>
-
-  <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-    <a href="?query=<?php echo urlencode($searchQuery); ?>&page=<?php echo $i; ?>" class="<?php echo ($i === $page) ? 'active' : ''; ?>"><?php echo $i; ?></a>
-  <?php endfor; ?>
-
-  <?php if ($page < $totalPages): ?>
-    <a href="?query=<?php echo urlencode($searchQuery); ?>&page=<?php echo $page + 1; ?>" class="next">Next</a>
-  <?php endif; ?>
+<div class="pagination" id="pagination-container">
+  <!-- Pagination links will be loaded here via AJAX -->
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentQuery = ''; // Initialize search query
+
+    // Function to load courses based on page number and search query
+    function loadCourses(page = 1, query = '') {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `utility/fetch_available_courses.php?page=${page}&query=${encodeURIComponent(query)}`, true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          displayCourses(response.courses);
+          displayPagination(response.totalPages, response.currentPage, query);
+        }
+      };
+      xhr.send();
+    }
+
+    // Function to display courses
+    function displayCourses(courses) {
+      const courseContainer = document.getElementById('course-container');
+      courseContainer.innerHTML = ''; // Clear previous courses
+      if (courses.length === 0) {
+        courseContainer.innerHTML = '<p>No courses found matching your search criteria.</p>';
+        return;
+      }
+
+      courses.forEach(course => {
+        const courseHtml = `
+        <div class="course">
+          <a href="product.php?course_id=${course.course_id}">
+            <img src="${course.thumbnail_path}" alt="${course.course_title}">
+            <div class="course-info">
+              <h3>${course.course_title}</h3>
+              <p>${course.course_description}</p>
+            </div>
+          </a>
+        </div>`;
+        courseContainer.insertAdjacentHTML('beforeend', courseHtml);
+      });
+    }
+
+    // Function to display pagination
+    function displayPagination(totalPages, currentPage, query) {
+      const paginationContainer = document.getElementById('pagination-container');
+      paginationContainer.innerHTML = ''; // Clear previous pagination
+
+      if (currentPage > 1) {
+        paginationContainer.innerHTML += `<a href="#" class="prev" data-page="${currentPage - 1}" data-query="${query}">Previous</a>`;
+      }
+
+      for (let i = 1; i <= totalPages; i++) {
+        const activeClass = (i === currentPage) ? 'active' : '';
+        paginationContainer.innerHTML += `<a href="#" class="${activeClass}" data-page="${i}" data-query="${query}">${i}</a>`;
+      }
+
+      if (currentPage < totalPages) {
+        paginationContainer.innerHTML += `<a href="#" class="next" data-page="${currentPage + 1}" data-query="${query}">Next</a>`;
+      }
+    }
+
+    // Handle pagination click
+    document.getElementById('pagination-container').addEventListener('click', function(e) {
+      if (e.target.tagName === 'A') {
+        e.preventDefault();
+        const page = e.target.getAttribute('data-page');
+        const query = document.querySelector('input[name="query"]').value; // Get the search query from the form input
+        loadCourses(page, query); // Pass the current query when pagination is clicked
+      }
+    });
+
+    // Handle search form submission
+    const searchForm = document.querySelector('.search-form');
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent the form from submitting the traditional way
+      const query = document.querySelector('input[name="query"]').value; // Get the search query from the input field
+      currentQuery = query; // Store the current query
+      loadCourses(1, query); // Load courses based on search query
+    });
+
+    // Load initial courses (either from search or default)
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialQuery = urlParams.get('query') || ''; // Get the search query from URL if present
+    currentQuery = initialQuery;
+    loadCourses(1, initialQuery);
+  });
+</script>
+
 
 <style>
   /* css for top demanding course nameplate */
   /* Centering the container and adding margin */
-  .header-container {
-    text-align: center;
-    margin: 20px 0;
-  }
+
 
   .header-title {
     display: inline-block;

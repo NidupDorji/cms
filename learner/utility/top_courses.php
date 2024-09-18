@@ -34,12 +34,11 @@
 
 <style>
   /* Header styling */
-  .header-container {
+  /* .header-container {
     text-align: center;
     margin: 20px 0;
     position: relative;
-    /* Needed for pseudo-element positioning */
-  }
+  } */
 
   .header-container::before {
     content: '';
@@ -93,15 +92,7 @@
     max-width: 1200px;
   }
 
-  .top-courses {
-    position: relative;
-    background-color: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    width: 300px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+
 
   .top-courses:hover {
     transform: scale(1.05);

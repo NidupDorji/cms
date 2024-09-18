@@ -93,37 +93,45 @@ include "../utility/auth.php";
 
     <div class="course_material_container">
         <div class="left-panel">
-            <h3 class="course-title"><?php echo $courseTitle; ?></h3>
+            <div class="inner-left-panel">
+                <h3 class="course-title"><?php echo $courseTitle; ?></h3>
 
-            <p id="course-description">
-                <i class='fas fa-info-circle'></i> <!-- Font Awesome info circle icon -->
-                <span id="description-label">Course Description:</span>
-                <span id="full-description" style="display:none;"><?php echo $courseDescription; ?></span>
-                <button id="toggle-description" onclick="toggleDescription()">Show More</button>
-            </p>
+                <div>
+                    <div>
+                        <p id="course-description">
+                            <i class='fas fa-info-circle'></i> <!-- Font Awesome info circle icon -->
+                            <span id="description-label">Course Description:</span>
+                            <button id="toggle-description" onclick="toggleDescription()">Show More</button>
+                        </p>
+                    </div>
+                    <div class="full-description" id="full-description" style="display:none;">
+                        <span><?php echo $courseDescription; ?></span>
+                    </div>
+                </div>
+                <!-- course objectives section coming... -->
+                <ul>
+                    <?php
+                    // Fetch videos related to the selected course
+                    $videoQuery = "SELECT video_title FROM videos WHERE course_id = $courseId";
+                    $videoResult = mysqli_query($conn, $videoQuery);
 
-            <ul>
-                <?php
-                // Fetch videos related to the selected course
-                $videoQuery = "SELECT video_title FROM videos WHERE course_id = $courseId";
-                $videoResult = mysqli_query($conn, $videoQuery);
-
-                if (mysqli_num_rows($videoResult) > 0) {
-                    while ($video = mysqli_fetch_assoc($videoResult)) {
-                        $videoTitle = htmlspecialchars($video['video_title']);
-                        $videoPath = "../teacher/courses/$courseTitle/$videoTitle";
-                        echo "<li>
+                    if (mysqli_num_rows($videoResult) > 0) {
+                        while ($video = mysqli_fetch_assoc($videoResult)) {
+                            $videoTitle = htmlspecialchars($video['video_title']);
+                            $videoPath = "../teacher/courses/$courseTitle/$videoTitle";
+                            echo "<li>
                                 <a href='#' class='video-link' data-videopath='$videoPath'>
                                     <i class='fas fa-play-circle'></i> <!-- Font Awesome video icon -->
                                     $videoTitle
                                 </a>
                             </li>";
+                        }
+                    } else {
+                        echo "<p>No videos available for this course.</p>";
                     }
-                } else {
-                    echo "<p>No videos available for this course.</p>";
-                }
-                ?>
-            </ul>
+                    ?>
+                </ul>
+            </div>
         </div>
 
         <!-- RIGHT PANEL -->
@@ -538,6 +546,13 @@ include "../utility/auth.php";
 <?php $conn->close(); ?>
 
 <style>
+    .inner-left-panel {
+        padding: 5px;
+        height: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+    }
+
     #user-info {
         display: none;
     }

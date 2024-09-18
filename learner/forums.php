@@ -46,22 +46,44 @@ include "../utility/auth.php";
         </div>
 
         <!-- Filter Forum Posts -->
+        <?php
+        // Get the course_id from the URL
+        $selected_course_id = isset($_GET['course_id']) ? $_GET['course_id'] : '';
+
+        // Fetch courses from the database
+        include "../utility/db.php";
+        $query = "SELECT course_id, course_title FROM courses";
+        $result = mysqli_query($conn, $query);
+        ?>
+
         <div class="forum-filter">
           <label for="course-filter">Filter by Course:</label>
-          <select id="course-filter">
+          <select id="course-filter" name="course_id" onchange="filterForum()">
             <option value="">Select Course</option>
-            <!-- Populate with courses from database -->
             <?php
-            // Fetch courses from the database
-            include "../utility/db.php";
-            $query = "SELECT course_id, course_title FROM courses";
-            $result = mysqli_query($conn, $query);
+            // Populate the dropdown and mark the selected course
             while ($row = mysqli_fetch_assoc($result)) {
-              echo '<option value="' . $row['course_id'] . '">' . $row['course_title'] . '</option>';
+              $course_id = $row['course_id'];
+              $course_title = $row['course_title'];
+
+              // Check if this course is the one selected in the URL
+              $selected = ($course_id == $selected_course_id) ? 'selected' : '';
+              echo '<option value="' . $course_id . '" ' . $selected . '>' . $course_title . '</option>';
             }
             ?>
           </select>
         </div>
+
+        <script>
+          // Redirect to the selected course's forum page on change
+          function filterForum() {
+            var courseId = document.getElementById('course-filter').value;
+            if (courseId) {
+              window.location.href = 'forums.php?course_id=' + courseId;
+            }
+          }
+        </script>
+
       </section>
 
       <!-- Forum Posts -->
@@ -72,38 +94,47 @@ include "../utility/auth.php";
           $course_id = $_GET['course_id'];
           $query = "SELECT * FROM discussions WHERE course_id = '$course_id' ORDER BY created_at DESC";
           $result = mysqli_query($conn, $query);
-          while ($row = mysqli_fetch_assoc($result)) {
-            $discussion_id = $row['discussion_id'];
 
-            // Replies count
-            $replies_query = "SELECT COUNT(*) AS replies_count FROM replies WHERE discussion_id = '$discussion_id'";
-            $replies_result = mysqli_query($conn, $replies_query);
-            $replies = mysqli_fetch_assoc($replies_result)['replies_count'];
+          // Check if there are any results
+          if (mysqli_num_rows($result) > 0) {
+            // Loop through and display forum posts
+            while ($row = mysqli_fetch_assoc($result)) {
+              $discussion_id = $row['discussion_id'];
 
-            // Render post
-            echo '<div class="forum-post">';
+              // Replies count
+              $replies_query = "SELECT COUNT(*) AS replies_count FROM replies WHERE discussion_id = '$discussion_id'";
+              $replies_result = mysqli_query($conn, $replies_query);
+              $replies = mysqli_fetch_assoc($replies_result)['replies_count'];
 
-            // Discussion title wrapped in anchor tag
-            echo '<a href="#" class="discussion-title" data-post-id="' . $discussion_id . '">';
-            echo '<h2>' . htmlspecialchars($row['discussion_title']) . '</h2>';
-            echo '</a>';
+              // Render post
+              echo '<div class="forum-post">';
 
-            // Post content
-            echo '<p>' . htmlspecialchars($row['discussion_body']) . '</p>';
-            echo '<small>Posted by ' . htmlspecialchars($row['user_id']) . ' on ' . $row['created_at'] . '</small>';
+              // Discussion title wrapped in anchor tag
+              echo '<a href="#" class="discussion-title" data-post-id="' . $discussion_id . '">';
+              echo '<h2>' . htmlspecialchars($row['discussion_title']) . '</h2>';
+              echo '</a>';
 
-            // Like icon and replies count
-            echo '<div class="forum-post-actions">';
-            echo '<span class="like-icon"><i class="fas fa-thumbs-up"></i></span>';
-            echo '<span class="replies-icon"><i class="fas fa-comments"></i><a href="#" class="view-replies" data-post-id="' . $discussion_id . '">';
-            echo $replies . ' Replies</a></span>';
-            echo '</div>';
+              // Post content
+              echo '<p>' . htmlspecialchars($row['discussion_body']) . '</p>';
+              echo '<small>Posted by ' . htmlspecialchars($row['user_id']) . ' on ' . $row['created_at'] . '</small>';
 
-            echo '</div>';
+              // Like icon and replies count
+              echo '<div class="forum-post-actions">';
+              echo '<span class="like-icon"><i class="fas fa-thumbs-up"></i></span>';
+              echo '<span class="replies-icon"><i class="fas fa-comments"></i><a href="#" class="view-replies" data-post-id="' . $discussion_id . '">';
+              echo $replies . ' Replies</a></span>';
+              echo '</div>';
+
+              echo '</div>';
+            }
+          } else {
+            // If no posts are found, display message
+            echo '<p>No discussion yet</p>';
           }
           ?>
         </div>
       </section>
+
 
     </div>
   </main>
@@ -113,7 +144,7 @@ include "../utility/auth.php";
     <div class="modal-content">
       <span class="close">&times;</span>
       <h2>Create New Post</h2>
-      <form action="create_forum_post.php" method="post">
+      <form action="utility/create_forum_post.php" method="post" onsubmit="copyContentToTextarea()">
         <!-- Title -->
         <div class="modal-field">
           <label for="post-title">Title:</label>
@@ -129,30 +160,55 @@ include "../utility/auth.php";
             <button type="button" id="underline-btn">U</button>
             <!-- Add more formatting options as needed -->
           </div>
-          <div contenteditable="true" id="post-body" name="post_body" class="editor"></div>
+          <div contenteditable="true" id="post-body" class="editor"></div>
+
+          <!-- Hidden textarea to store content from contenteditable div -->
+          <textarea id="hidden-post-body" name="post_body" style="display:none;"></textarea>
+          <script>
+            function copyContentToTextarea() {
+              var contentEditableDiv = document.getElementById("post-body");
+              var hiddenTextarea = document.getElementById("hidden-post-body");
+
+              // Copy the content from the contenteditable div to the hidden textarea
+              hiddenTextarea.value = contentEditableDiv.innerHTML;
+            }
+          </script>
         </div>
 
         <!-- Course Selection -->
+        <?php
+        // Get the course_id from the URL
+        $selected_course_id = isset($_GET['course_id']) ? $_GET['course_id'] : '';
+
+        // Fetch courses from the database
+        include "../utility/db.php";
+        $query = "SELECT course_id, course_title FROM courses";
+        $result = mysqli_query($conn, $query);
+        ?>
+
         <div class="modal-field">
           <label for="modal-course-filter">Select Course:</label>
           <select id="modal-course-filter" name="course_id">
             <option value="">Select Course</option>
-            <!-- Populate with courses from database -->
             <?php
-            // Fetch courses from the database
-            include "../utility/db.php";
-            $query = "SELECT course_id, course_title FROM courses";
-            $result = mysqli_query($conn, $query);
+            // Populate the dropdown and mark the selected course
             while ($row = mysqli_fetch_assoc($result)) {
-              echo '<option value="' . $row['course_id'] . '">' . $row['course_title'] . '</option>';
+              $course_id = $row['course_id'];
+              $course_title = $row['course_title'];
+
+              // Check if this course is the one selected in the URL
+              $selected = ($course_id == $selected_course_id) ? 'selected' : '';
+              echo '<option value="' . $course_id . '" ' . $selected . '>' . $course_title . '</option>';
             }
             ?>
           </select>
         </div>
 
+
         <!-- Submit Button -->
         <button type="submit">Submit Post</button>
       </form>
+
     </div>
   </div>
 
@@ -194,6 +250,28 @@ include "../utility/auth.php";
   <!-- Script for js and chatbot -->
   <?php include "../utility/bot.php" ?>
   <script src="../js/script.js"></script>
+  <!-- forum search functionality -->
+  <script>
+    document.getElementById('search-btn').addEventListener('click', function() {
+      var searchQuery = document.getElementById('search').value;
+      var courseId = new URLSearchParams(window.location.search).get('course_id'); // Get course_id from URL
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'utility/search_forum.php', true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          document.getElementById('forum-posts-list').innerHTML = xhr.responseText;
+        } else {
+          console.error('Error fetching search results.');
+        }
+      };
+
+      xhr.send('query=' + encodeURIComponent(searchQuery) + '&course_id=' + encodeURIComponent(courseId));
+    });
+  </script>
+
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Attach click event to discussion title and replies link
@@ -248,20 +326,14 @@ include "../utility/auth.php";
 
   .forum-header {
     margin-bottom: 20px;
+    padding: 10px;
   }
 
   .forum-header-actions {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    /* align-items: center; */
   }
-
-  /* .forum-search input[type="text"] {
-    width: 70%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  } */
 
   .forum-search {
     display: flex;
@@ -524,6 +596,7 @@ include "../utility/auth.php";
   }
 
   .reply-actions {
+    display: flex;
     margin-top: 10px;
     font-size: 14px;
     /* Adjust font size to control icon size */

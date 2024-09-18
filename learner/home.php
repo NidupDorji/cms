@@ -24,18 +24,20 @@ include "../utility/auth.php";
 
   <!-- display top 3 courses. -->
 
-
-  <!-- Conditionally include top courses only if there's no search query -->
-  <?php if (!isset($_GET['query']) || empty(trim($_GET['query']))): ?>
-    <?php include "utility/top_courses.php" ?>
-  <?php endif; ?>
-
-
-
-
   <!-- DISPLAY AVAILABLE/UPLOADED TOP COURSES -->
   <?php include "utility/navigation.php" ?>
 
+  <!-- Conditionally include top courses only if there's no search query -->
+  <?php
+  // Get the search query from the URL
+  $searchQuerylo = isset($_GET['query']) ? trim($_GET['query']) : '';
+
+  // Check if the search query is empty
+  if (empty($searchQuerylo)) {
+    // If no search query is present, include top courses
+    include "utility/top_courses.php";
+  }
+  ?>
 
   <!-- Footer -->
   <?php include "../utility/footer.php"; ?>
