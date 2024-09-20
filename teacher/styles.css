@@ -216,7 +216,7 @@ body.dark-mode .edit-button{
   color:white;
 }
 
-@media screen and (min-width: 381px) {
+@media screen and (min-width: 375px) {
   .hamburger-menu {
     display: none;
   }

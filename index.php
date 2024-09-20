@@ -21,16 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Select Role</title>
   <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body>
   <div class="role-selection-container">
-    <div>
-      <h2>Select Your Role</h2>
-    </div>
     <div class="form-container">
       <form class="index-form" action="index.php" method="post">
         <div class="role-card" data-role="admin">
@@ -75,6 +72,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
         this.classList.add('selected');
       });
+    });
+    // Detect if the user is on a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    document.querySelectorAll('.role-card').forEach(card => {
+      // For both mobile and desktop
+      const selectRole = function() {
+        // Set the role input based on the clicked card
+        const role = this.getAttribute('data-role');
+        document.querySelector(`input[name="role"][value="${role}"]`).checked = true;
+
+        // Submit the form
+        this.closest('form').submit();
+      };
+
+      // Add single-click selection for mobile
+      if (isMobile) {
+        card.addEventListener('click', selectRole);
+      } else {
+        // Double-click for desktop, single click for selecting the card
+        card.addEventListener('dblclick', selectRole);
+
+        card.addEventListener('click', function() {
+          document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      }
     });
   </script>
 </body>

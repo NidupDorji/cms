@@ -7,32 +7,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow: hidden;
-}
-
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    color: #4B7A8A;
-  }
-
-  50% {
-    color: #2a5d5d;
-  }
+  overflow-y: scroll;
 }
 
 /* content */
@@ -44,7 +19,6 @@ body {
   max-width: 500px;
   width: 100%;
   text-align: center;
-  animation: scaleIn 0.8s ease-out;
 }
 
 .content p {
@@ -60,7 +34,6 @@ body {
   padding: 12px 20px;
   border-radius: 4px;
   display: inline-block;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -75,28 +48,18 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+
 .login-form,
 .register-form{
-  max-width: 450px;
+  max-width: 350px;
   width: 100%;
   background-color: #fff;
-  padding: 75px;
-  border-radius: 8px;
+  padding: 2em;
+  border-radius: 0.5em;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: scaleIn 0.8s ease-out;
 }
 
-@keyframes scaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
 
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 
 .input-group {
   margin-bottom: 20px;
@@ -110,39 +73,29 @@ body {
 }
 
 .input-group input {
-  width: 100%;
-  padding: 12px;
+  width: 92%;
+  padding: 0.8em;
   border: 2px solid #ddd;
-  border-radius: 4px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  border-radius: .2em;
 }
 
 .input-group input:focus {
   border-color: #4B7A8A;
   box-shadow: 0 0 15px rgba(75, 122, 138, 0.5);
   outline: none;
-  animation: glow 0.5s ease-out;
 }
 
-@keyframes glow {
-  from {
-    box-shadow: 0 0 5px rgba(75, 122, 138, 0.3);
-  }
 
-  to {
-    box-shadow: 0 0 15px rgba(75, 122, 138, 0.5);
-  }
-}
 
 .btn,
 .submit-btn {
   background-color: #4B7A8A;
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 4px;
+  padding: 0.4em 0.6em;
+  border-radius: .2em;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 0.8em;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -371,5 +324,17 @@ p a:hover {
 
   .role-icon {
     font-size: 26px;
+  }
+}
+@media screen and (max-width: 375px) {
+
+  .login-form,
+  .register-form,
+  .role-selection-container {
+    width: 100%;
+    background-color: #fff;
+    padding: 2em;
+    border-radius: 0.2em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }
