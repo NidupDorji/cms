@@ -41,7 +41,12 @@ nav {
 
 .hamburger-menu i {
   font-size: 32px;
+  color:black;
 }
+body.dark-mode .hamburger-menu i {
+  color: white;
+}
+
 
 /* Hide the nav menu on smaller screens initially */
 #nav-menu {
@@ -108,7 +113,7 @@ body.dark-mode .dropdown-content a:hover {
   /* Slight hover effect in dark mode */
 }
 
-@media screen and (max-width: 380px) {
+@media screen and (max-width: 375px) {
 
   /* iPhone SE screen width */
   #nav-menu {
@@ -136,11 +141,11 @@ body.dark-mode .dropdown-content a:hover {
     position: fixed;
     top: 0;
     left: 0;
-    width: 60%;
+    width: 40%;
     height: 100%;
     background-color: rgba(95, 158, 160, 0.95);
-    padding-top: 40px;
-    padding-left: 10px;
+    padding-top: 50px;
+    padding-left: 32px;
     z-index: 1000;
     overflow-y: scroll;
   }
@@ -193,12 +198,23 @@ body.dark-mode .dropdown-content a:hover {
     color: black;
   }
 
+    table th:nth-child(2),
+    /* Hides the Course Description header */
+    table td:nth-child(2) {
+      /* Hides the Course Description data */
+      display: none;
+    }
 }
 
 body.dark-mode #nav-menu.active {
   background-color: rgba(31, 31, 31, 0.95);
 }
-
+.edit-button{
+  color:black;
+}
+body.dark-mode .edit-button{
+  color:white;
+}
 
 @media screen and (min-width: 381px) {
   .hamburger-menu {
@@ -416,36 +432,41 @@ footer a {
   /* Space between form groups */
 }
 
+#course_title, 
+#course_description,
+#new_thumbnail,
+#new_documents{
+  width: 94%;
+  padding:0.5em;
+}
+.existing_video_transcripts{
+  width:95%;
+}
+
+
+
 /* Label Styles */
 .container form label {
   font-size: 1em;
-  /* Standard font size */
   color: #555;
-  /* Medium gray color */
   margin-bottom: 8px;
-  /* Space between label and input */
   font-weight: 500;
-  /* Medium font weight */
+}
+body.dark-mode .container form label{
+    color: #fff;
 }
 
 /* Input and Textarea Styles */
 .container form input[type="text"],
 .container form textarea,
 .container form input[type="file"] {
-  padding: 12px;
-  /* Internal spacing */
+  padding: 0.5em;
   border: 1px solid #ccc;
-  /* Light border */
-  border-radius: 4px;
-  /* Slightly rounded corners */
+  border-radius: 0.2em;
   font-size: 1em;
-  /* Standard font size */
   color: #333;
-  /* Dark text color */
   background-color: #fff;
-  /* White background */
   transition: border-color 0.3s ease;
-  /* Smooth transition for focus effect */
 }
 
 /* Input and Textarea Focus Styles */
@@ -461,69 +482,50 @@ footer a {
 /* Textarea Specific Styles */
 .container form textarea {
   resize: vertical;
-  /* Allows vertical resizing only */
-  min-height: 120px;
-  /* Sets minimum height */
+  min-height: 100px;
 }
 
 /* File Input Styles */
 .container form input[type="file"] {
-  padding: 5px;
-  /* Smaller padding for file inputs */
+  padding: 0.2em;
 }
 
 /* Submit Button Styles */
 .container form button[type="submit"] {
-  padding: 14px 20px;
-  /* Button padding */
+  padding: 0.4em 0.6em;
   background-color: #5F9EA0;
-  /* Teal background color */
   color: #fff;
-  /* White text color */
   border: none;
-  /* Removes default border */
   border-radius: 4px;
-  /* Rounded corners */
   font-size: 1.1em;
-  /* Slightly larger font */
   cursor: pointer;
-  /* Pointer cursor on hover */
   transition: background-color 0.3s ease, transform 0.2s ease;
-  /* Smooth transitions for hover effects */
 }
 
 /* Submit Button Hover Effect */
 .container form button[type="submit"]:hover {
   background-color: #53868B;
-  /* Darker teal on hover */
   transform: translateY(-2px);
-  /* Slight upward movement */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  /* Adds shadow on hover */
 }
 
 /* Responsive Styles */
 @media (max-width: 600px) {
   .container {
     padding: 20px;
-    /* Reduces padding on small screens */
   }
 
   .container form div {
     margin-bottom: 15px;
-    /* Reduces space between form groups */
   }
 
   .container form button[type="submit"] {
     font-size: 1em;
-    /* Slightly smaller font */
     padding: 12px;
-    /* Reduces button padding */
   }
 }
 
 
-/* dark mode */
 /* Theme Switch - Dark Mode */
 body.dark-mode {
   background-color: #121212;
@@ -711,16 +713,19 @@ body.dark-mode .personal-details ul li:hover {
   background-color: #444;
 }
 
-.toggle-button {
+.toggle-button,
+.remove-video{
   display: block;
-  margin: 20px auto;
-  /* Center the button horizontally */
-  padding: 10px 15px;
+  margin: auto;
+  padding: 0.4em 0.6em;
   background-color: #4B7A8A;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 0.2em;
+}
+.save-btn{
+  margin-top:2em;
 }
 
 .toggle-button:hover {
@@ -728,17 +733,14 @@ body.dark-mode .personal-details ul li:hover {
 }
 
 .course-form {
-  /* Initially hide the course form */
-  margin-top: 20px;
+  margin-top: 1em;
   background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.5em;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .course-form-home {
   display: none;
-  /* Initially hide the course form */
   margin-top: 20px;
   background-color: #f9f9f9;
   padding: 20px;
@@ -767,21 +769,21 @@ body.dark-mode .personal-details ul li:hover {
 .course-form input[type="text"],
 .course-form textarea,
 .course-form input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
+  width: 95%;
+  padding: 0.5em;
+  margin-bottom: 1em;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 0.2em;
 }
 
 .course-form button {
-  background-color: #007bff;
+  background-color: #5F9EA0;
   color: #fff;
   border: none;
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 0.2em;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
 }
 
 .course-form button:hover {

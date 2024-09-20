@@ -277,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $videoQuery = $conn->query("SELECT video_id, video_title, transcript FROM videos WHERE course_id = $courseId");
           while ($video = $videoQuery->fetch_assoc()) {
             echo '<p>' . htmlspecialchars($video['video_title']) . ' <button type="submit" name="delete_video" value="' . htmlspecialchars($video['video_id']) . '">Delete</button></p>';
-            echo '<textarea name="existing_video_transcripts[' . $video['video_id'] . ']" rows="3">' . htmlspecialchars($video['transcript']) . '</textarea>';
+            echo '<textarea class="existing_video_transcripts" name="existing_video_transcripts[' . $video['video_id'] . ']" rows="3">' . htmlspecialchars($video['transcript']) . '</textarea>';
           }
           ?>
         </div>
@@ -292,13 +292,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="transcript-upload">
               <label for="transcript">Transcript:</label>
               <textarea id="transcript" name="transcript[]"></textarea>
+              <button type="button" class="remove-video">- Video</button>
             </div>
-            <button type="button" class="remove-video">-</button>
           </div>
         </div>
-        <button type="button" id="add-video" class="toggle-button">+ Add Another Video</button>
+        <button type="button" id="add-video" class="toggle-button">+ Video</button>
 
-        <button type="submit">Save Changes</button>
+
+        <button class="save-btn" type="submit">Save Changes</button>
       </form>
     </div>
   </div>
@@ -335,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       const removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.classList.add("remove-video");
-      removeButton.innerHTML = "-";
+      removeButton.innerHTML = "- Video";
       removeButton.addEventListener("click", function() {
         videoTranscriptGroup.remove();
       });

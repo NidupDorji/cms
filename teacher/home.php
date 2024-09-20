@@ -237,6 +237,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </script>
 
 </html>
-<?php
-mysqli_close($conn)
-?>
