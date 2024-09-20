@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-echo "user_id:" . $_SESSION['user_id'];
+// echo "user_id:" . $_SESSION['user_id'];
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -18,9 +18,7 @@ include "../utility/auth.php";
     <!-- header -->
     <?php include "utility/header.php" ?>
 
-    <!-- copied from demo start -->
-    <div class="content">
-        <!-- notification message -->
+    <!-- <div class="content">
         <?php if (isset($_SESSION['success'])) : ?>
             <div class="error success">
                 <h3>
@@ -32,15 +30,22 @@ include "../utility/auth.php";
             </div>
         <?php endif ?>
 
-        <!-- logged in user information -->
         <?php if (isset($_SESSION['username'])) : ?>
-            <p style="font-size: 24px; color: #ffd700; text-align: center;  padding: 10px;  background: linear-gradient(135deg, #5F9EA0, black); box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);">Name:<strong style="color: #ffd700; font-size: 28px;">
+            <p style="font-size: 24px; color: #ffd700; text-align: center;  padding: 10px;  background: radial-gradient(circle, #5F9EA0, ); ">Name:<strong style=" color: #ffd700; font-size: 28px;">
                     <?php echo $_SESSION['username']; ?>
                 </strong></p>
         <?php endif ?>
+    </div> -->
+    <!-- prev and next video -->
+    <div class="pagination-icons">
+        <a href="#"><i class="fas fa-chevron-left"></i>Prev</a>
+        <a href="#">Next<i class="fas fa-chevron-right"></i></a>
     </div>
-    <!-- copied from demo ends -->
 
+    <!-- Menu bar to toggle the video -->
+    <div class="menu-bar">
+        <a href="#" id="toggle-videos"><i class="fas fa-bars"></i> Menu</a>
+    </div>
 
     <!-- --------------------------------------------------------------------------------------- -->
     <!-- Course material section starts -->
@@ -73,8 +78,6 @@ include "../utility/auth.php";
     $user_id = $_SESSION['user_id']; // Assuming the user ID is stored in the session
     $course_id = $_GET['course_id']; // Get the course ID from the URL
 
-
-
     // Check if the user has liked the course
     $liked = false;
     $stmt = $conn->prepare("SELECT * FROM likes WHERE user_id = ? AND course_id = ?");
@@ -95,11 +98,10 @@ include "../utility/auth.php";
         <div class="left-panel">
             <div class="inner-left-panel">
                 <h3 class="course-title"><?php echo $courseTitle; ?></h3>
-
                 <div>
                     <div>
                         <p id="course-description">
-                            <i class='fas fa-info-circle'></i> <!-- Font Awesome info circle icon -->
+                            <!-- <i class='fas fa-info-circle'></i> -->
                             <span id="description-label">Course Description:</span>
                             <button id="toggle-description" onclick="toggleDescription()">Show More</button>
                         </p>
@@ -151,7 +153,6 @@ include "../utility/auth.php";
                 <button class="nav-button" data-content="MATERIALS">
                     <span>Materials</span>
                 </button>
-
 
                 <button class="nav-button" data-content="NOTES">
                     <span>Notes</span>
@@ -532,9 +533,34 @@ include "../utility/auth.php";
     }
 </script>
 <!-- HANDLE NOTE ACTIONS -->
+<script>
+    document.getElementById('toggle-videos').addEventListener('click', function() {
+        const menuBar = document.querySelector('.menu-bar');
+        menuBar.classList.toggle('fixed'); // Toggle the position class
+    });
+    document.getElementById('toggle-videos').addEventListener('click', function() {
+        const leftPanel = document.querySelector('.left-panel');
+        if (leftPanel.style.display === 'none' || leftPanel.style.display === '') {
+            leftPanel.style.display = 'block';
+        } else {
+            leftPanel.style.display = 'none';
+        }
+    });
+    const videoLinks = document.querySelectorAll('.video-link');
+    videoLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const leftPanel = document.querySelector('.left-panel');
+            const menuBar = document.querySelector('.menu-bar');
 
+            if (window.innerWidth <= 375) {
+                leftPanel.style.display = 'none'; // Hide the left panel
+                menuBar.classList.remove('fixed'); // Reset the menu bar to the original position
+            }
+        });
+    });
+</script>
 <!-- Footer -->
-<?php include "../utility/footer.php"; ?>
+<!-- <?php include "../utility/footer.php"; ?> -->
 <!-- Script for js and chatbot -->
 <?php include "../utility/bot.php" ?>
 
@@ -546,11 +572,92 @@ include "../utility/auth.php";
 <?php $conn->close(); ?>
 
 <style>
+    /* Hide the icons by default using the class 'pagination-icons' */
+    .pagination-icons a {
+        display: none;
+
+    }
+
+    /* Hide the menu bar by default */
+    .menu-bar {
+        display: none;
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .menu-bar a {
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    .menu-bar a:hover {
+        text-decoration: none;
+    }
+
+
+    /* Display the icons when the screen size is 375px or smaller */
+    @media (max-width: 375px) {
+        .pagination-icons a {
+            display: inline-block;
+            font-size: 1em;
+            padding: 0.5em;
+            text-decoration: none;
+            color: black;
+        }
+
+        .pagination-icons i {
+            font-size: 1em;
+        }
+
+        .menu-bar {
+            display: block;
+        }
+
+        .menu-bar.fixed {
+            position: fixed;
+            top: 8px;
+            left: 8px;
+            z-index: 2000;
+        }
+
+        .left-panel {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            background-color: white;
+            width: 100%;
+            /* adjust as needed */
+            height: 100%;
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            overflow-y: scroll;
+        }
+
+        .inner-left-panel {
+            position: relative;
+            top: 14px;
+        }
+
+        .right-panel {
+            width: 100%;
+        }
+    }
+
+    /* By default, the video container is visible */
+    .video-container {
+        display: block;
+    }
+
+
     .inner-left-panel {
         padding: 5px;
         height: 100%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        border-radius: 10px;
+        /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); */
+        /* border-radius: 10px; */
     }
 
     #user-info {
@@ -560,15 +667,15 @@ include "../utility/auth.php";
     /* transcript content style with display-content */
     .transcript-content {
         background-color: #f9f9f9;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin-top: 15px;
-        padding: 20px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
+        /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+        /* margin-top: 15px; */
+        /* padding: 20px; */
+        /* border-radius: 6px; */
+        /* border: 1px solid #ddd; */
         max-height: 100%;
         overflow-y: auto;
         line-height: 1.8;
-        font-size: 18px;
+        font-size: 0.9rem;
         color: #333;
     }
 
@@ -587,21 +694,21 @@ include "../utility/auth.php";
     /* notes style within display-content */
     .note-item {
         background-color: #f9f9f9;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 6px;
+        padding: 0.5rem;
+        margin-bottom: 0.5em;
+        border-radius: 0.5rem;
         border: 1px solid #ddd;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .note-text {
-        width: 100%;
-        padding: 10px;
-        font-size: 14px;
+        width: 90%;
+        padding: 1em;
+        font-size: 0.9em;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 0.5em;
         resize: vertical;
-        margin-bottom: 10px;
+        margin-bottom: 0.09em;
     }
 
     button.save-note,
@@ -625,13 +732,13 @@ include "../utility/auth.php";
     }
 
     #new-note-text {
-        width: 100%;
-        padding: 10px;
-        font-size: 14px;
+        width: 90%;
+        padding: 1em;
+        font-size: 0.9em;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 0.5em;
         resize: vertical;
-        margin-top: 15px;
+        margin-top: 0.09em;
     }
 
     button.add-new-note {

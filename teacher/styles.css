@@ -1,156 +1,244 @@
-/* Header and Navigation Styles */
+header h1 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+header nav a {
+  color: white;
+  margin-left: 20px;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+/* General styling */
 header {
-  background-color: #4B7A8A;
-  color: #ffffff;
-  padding: 15px 25px;
+  background-color: #5F9EA0;
+  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 20px;
   flex-wrap: wrap;
 }
 
 header h1 {
   margin: 0;
-  font-size: 1.8em;
-  font-weight: bold;
+  font-size: 1.5em;
 }
 
-header nav {
+nav {
   display: flex;
-  flex-wrap: wrap;
+  gap: 15px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-header nav a {
-  color: #ffffff;
-  margin-left: 25px;
+/* Hide the hamburger menu in larger screens */
+.hamburger-menu {
+  display: none;
+  cursor: pointer;
+}
+
+.hamburger-menu i {
+  font-size: 32px;
+}
+
+/* Hide the nav menu on smaller screens initially */
+#nav-menu {
+  display: flex;
+  gap: 15px;
+}
+
+/* General dropdown container styles */
+.dropdown-content {
+  position: absolute;
+  display: none;
+  background-color: rgba(95, 158, 160, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1002;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  min-width: 150px;
+  right: 5px;
+}
+
+/* Aligning the dropdowns to the right side of the icons */
+#language-dropdown,
+#profile-dropdown,
+#notification-dropdown {
+  right: 5px;
+  /* Ensure they align to the right of the screen */
+}
+
+/* Vertically align the links in the dropdowns */
+.dropdown-content a {
+  display: block;
+  padding: 8px 16px;
+  color: white;
   text-decoration: none;
-  padding: 12px 0;
-  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+/* Icons styles */
+#language-icon,
+#notification-icon,
+#profile-icon {
+  font-size: 1.5em;
+  color: white;
+  cursor: pointer;
+}
+
+/* Dark Mode - dropdown */
+body.dark-mode .dropdown-content {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+body.dark-mode .dropdown-content a {
+  color: #ffffff;
+}
+
+body.dark-mode .dropdown-content a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Slight hover effect in dark mode */
+}
+
+@media screen and (max-width: 380px) {
+
+  /* iPhone SE screen width */
+  #nav-menu {
+    display: none;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  /* Show the hamburger icon */
+  .hamburger-menu {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 24px;
+  }
+
+
+  /* Style for when the nav menu is active (visible) */
+  #nav-menu.active {
+    display: flex;
+    align-items: flex-start;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    background-color: rgba(95, 158, 160, 0.95);
+    padding-top: 40px;
+    padding-left: 10px;
+    z-index: 1000;
+    overflow-y: scroll;
+  }
+
+  /* Ensure the parent element of the logo uses flexbox */
+  .logo {
+    display: flex;
+    justify-content: center;
+    /* Horizontally centers the content */
+    width: 100%;
+    /* Ensures the logo takes full width of the container */
+  }
+
+  .logo h1 {
+    margin: 0;
+    font-size: 1.5em;
+    text-align: center;
+    /* Ensures text inside the h1 is centered */
+  }
+
+  .search-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    /* Adjust the space between input and button as needed */
+  }
+
+  .search-form input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .search-form button {
+    background-color: #5F9EA0;
+    /* Button background color */
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .search-form button i {
+    color: white;
+    /* Icon color */
+  }
+
+  body.dark-mode .search-form button i {
+    color: black;
+  }
+
+}
+
+body.dark-mode #nav-menu.active {
+  background-color: rgba(31, 31, 31, 0.95);
+}
+
+
+@media screen and (min-width: 381px) {
+  .hamburger-menu {
+    display: none;
+  }
+
+  #nav-menu {
+    display: flex;
+    flex-direction: row;
+  }
 }
 
 /* Search Bar Styles */
 .search-container {
   display: flex;
   align-items: center;
-  margin-left: 25px;
+  margin-left: 20px;
 }
 
 .search-container input[type="text"] {
-  padding: 6px;
+  padding: 5px;
   font-size: 1em;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
+  border-radius: 3px;
 }
 
 .search-container button {
-  padding: 8px 12px;
-  margin-left: 6px;
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  padding: 6px 10px;
+  margin-left: 5px;
+  background-color: white;
+  border-radius: 3px;
   cursor: pointer;
 }
+.search-container button i{
+  color: #444444;
+}
+
 
 .search-container button:hover {
-  background-color: #555;
-}
-
-/* Language Icon and Dropdown Styles */
-#language-icon {
-  font-size: 1.5em;
-  color: white;
-  cursor: pointer;
-  margin-left: 25px;
-}
-
-#language-dropdown {
-  display: none;
-  position: absolute;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  top: 72px;
-  right: 0;
-  width: 210px;
-  z-index: 1000;
-}
-
-#language-dropdown a {
-  color: #000;
-  padding: 12px;
-  text-decoration: none;
-  display: block;
-}
-
-#language-dropdown a:hover {
-  background-color: #f1f1f1;
-}
-
-/* Notification Icon and Container Styles */
-#notification-icon {
-  font-size: 1.5em;
-  color: white;
-  cursor: pointer;
-  margin-left: 25px;
-  position: relative;
-}
-
-#notification-container {
-  display: none;
-  position: absolute;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  top: 72px;
-  right: 0;
-  width: 210px;
-  z-index: 1000;
-}
-
-#notification-container p {
-  margin: 0;
-  color: #333;
-}
-
-/* Profile Icon and Dropdown Menu Styles */
-#profile-icon {
-  font-size: 1.5em;
-  color: white;
-  cursor: pointer;
-  margin-left: 25px;
-  position: relative;
-}
-
-.profile-dropdown {
-  display: none;
-  position: absolute;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  top: 72px;
-  right: 0;
-  width: 210px;
-  z-index: 1000;
-}
-
-.profile-dropdown a {
-  color: #000;
-  padding: 12px;
-  text-decoration: none;
-  display: block;
-}
-
-.profile-dropdown a:hover {
-  background-color: #f1f1f1;
+  background-color: #777;
 }
 
 /* Courses Section Styles */
@@ -316,12 +404,9 @@ footer a {
 /* Form Styles */
 .container form {
   display: flex;
-  /* Enables flexbox layout */
   flex-direction: column;
-  /* Stacks children vertically */
 }
 
-/* Form Group Styles */
 .container form div {
   display: flex;
   /* Enables flex layout for label and input */
@@ -464,7 +549,6 @@ body.dark-mode .search-container input[type="text"] {
 
 body.dark-mode .search-container button {
   background-color: #444444;
-  color: #ffffff;
 }
 
 /* Language Dropdown in Dark Mode */
@@ -787,7 +871,6 @@ th {
 }
 
 /* Dark Mode Styles */
-
 body.dark-mode .my-courses {
   color: #ffffff;
 }
@@ -820,14 +903,10 @@ body.dark-mode .my-courses h2 {
   color: #ffffff;
 }
 
-/* stylish Wavy Divider in home.php*/
 .stylish-divider {
   margin: 40px 0;
   height: 8px;
-  /* Increased thickness */
   background: linear-gradient(90deg, #4B7A8A, gray);
-  /* More vibrant colors */
-  /* border-radius: px; */
   position: relative;
   overflow: hidden;
 }
@@ -837,13 +916,11 @@ body.dark-mode .my-courses h2 {
   position: absolute;
   top: 0;
   left: -150%;
-  /* Start further left to enhance the effect */
   width: 300%;
   height: 100%;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
   opacity: 0.7;
   animation: wave 1.8s ease-in-out infinite;
-  /* Faster and smoother wave */
 }
 
 @keyframes wave {

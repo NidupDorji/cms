@@ -21,12 +21,12 @@ include('server.php');
 <body>
   <div class="content">
     <h2>Congratulation "<?php echo $_SESSION['username']; ?>", you have registered successfully.</h2>
-    <p style="text-align: center; font-size: 18px; color: #333; padding-bottom:5%;">
+    <p>
       Welcome to Content Management System! Our CMS provides an easy way to manage and publish your content.
       It includes user-friendly tools and an assistant bot to help you with any questions, ensuring a smooth
       content management experience.
     </p>
-    <p style="text-align: center;">
+    <p>
       <a href="home.php" class="btn">Proceed to Homepage</a>
     </p>
   </div>

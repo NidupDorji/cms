@@ -11,7 +11,7 @@
 <body>
 
 
-	<form method="post" action="login.php">
+	<form class="login-form" method="post" action="login.php">
 		<!-- <div class="header"> -->
 		<h2 style="text-align:center;">🎓Teacher Login</h2>
 		<?php include('../utility/errors.php'); ?>

@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,37 +28,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
   <div class="role-selection-container">
-    <h1>Select Your Role</h1>
-    <form action="index.php" method="post">
-      <div class="role-card">
-        <input type="radio" name="role" value="admin" id="admin" required>
-        <label for="admin">
-          <div class="role-icon">👑</div>
-          <h2>Admin</h2>
-          <p>Manage users, courses, and overall website settings.</p>
-        </label>
-      </div>
-      <div class="role-card">
-        <input type="radio" name="role" value="teacher" id="teacher" required>
-        <label for="teacher">
-          <div class="role-icon">🎓</div>
-          <h2>Teacher</h2>
-          <p>Create and manage course content for learners.</p>
-        </label>
-      </div>
-      <div class="role-card">
-        <input type="radio" name="role" value="learner" id="learner" required>
-        <label for="learner">
-          <div class="role-icon">📘</div>
-          <h2>Learner</h2>
-          <p>Access and interact with course content.</p>
-        </label>
-      </div>
-      <button type="submit" class="submit-btn">Continue</button>
-    </form>
+    <div>
+      <h2>Select Your Role</h2>
+    </div>
+    <div class="form-container">
+      <form class="index-form" action="index.php" method="post">
+        <div class="role-card" data-role="admin">
+          <input type="radio" name="role" value="admin" id="admin" required>
+          <label for="admin">
+            <div class="role-icon">👑</div>
+            <h3>Admin</h3>
+            <p>Manage users, courses, and overall website settings.</p>
+          </label>
+        </div>
+        <div class="role-card" data-role="teacher">
+          <input type="radio" name="role" value="teacher" id="teacher" required>
+          <label for="teacher">
+            <div class="role-icon">🎓</div>
+            <h3>Teacher</h3>
+            <p>Create and manage course content for learners.</p>
+          </label>
+        </div>
+        <div class="role-card" data-role="learner">
+          <input type="radio" name="role" value="learner" id="learner" required>
+          <label for="learner">
+            <div class="role-icon">📘</div>
+            <h3>Learner</h3>
+            <p>Access and interact with course content.</p>
+          </label>
+        </div>
+      </form>
+    </div>
   </div>
   <script>
     document.querySelectorAll('.role-card').forEach(card => {
+      card.addEventListener('dblclick', function() {
+        // Set the role input based on the clicked card
+        const role = this.getAttribute('data-role');
+        document.querySelector(`input[name="role"][value="${role}"]`).checked = true;
+
+        // Submit the form
+        this.closest('form').submit();
+      });
+
       card.addEventListener('click', function() {
         document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
         this.classList.add('selected');

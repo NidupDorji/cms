@@ -9,7 +9,7 @@
 
 <body>
 
-	<form method="post" action="register.php">
+	<form class="register-form" method="post" action="register.php">
 		<?php include('../utility/errors.php'); ?>
 		<h2 style="text-align:center;">📘Student Registration</h2>
 		<div class="input-group">

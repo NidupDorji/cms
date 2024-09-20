@@ -12,7 +12,7 @@
 	<!-- <div class="header">
 		<h2>📘Learner Login</h2>
 	</div> -->
-	<form method="post" action="login.php">
+	<form class="login-form" method="post" action="login.php">
 		<h2 style="text-align:center;">📘Learner Login</h2>
 		<?php include('../utility/errors.php'); ?>
 		<div class="input-group">

@@ -66,11 +66,13 @@ switch ($contentType) {
       } else {
         $response .= "<p>No notes added.</p>";
       }
-
       // Add a section to add new notes 
       $response .= "<h4>Add a New Note</h4>
+                    <div class='note-item'>
                     <textarea id='new-note-text' class='new-note-text'></textarea>
-                    <button class='add-new-note'>Add Note</button>";
+                    <button class='add-new-note'>Add Note</button>
+                    </div>
+                  ";
 
       echo $response;
       break;
