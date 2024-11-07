@@ -327,7 +327,6 @@ p a:hover {
   }
 }
 @media screen and (max-width: 375px) {
-
   .login-form,
   .register-form,
   .role-selection-container {

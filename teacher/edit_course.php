@@ -4,6 +4,9 @@ ini_set('display_errors', 1);
 
 session_start();
 
+// Authentication check using auth.php
+include "../utility/auth.php";
+
 // Database connection
 include "../utility/db.php";
 

@@ -1,9 +1,8 @@
 <?php
-session_start();
-
-// echo "user_id:" . $_SESSION['user_id'];
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
+session_start();
 
 //authentication check using auth.php
 include "../utility/auth.php";
